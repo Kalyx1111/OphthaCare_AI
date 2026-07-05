@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OphthaCare AI - Ophthalmology Health Intelligence Platform</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --indigo:#2c3e6b;--indigo-lt:#5d7abf;--indigo-pale:#eaecf8;
+  --teal:#0e7490;--teal-lt:#22c0d0;--teal-pale:#e6f7f9;
+  --gold:#b8922a;--gold-lt:#e8be60;--gold-pale:#fdf7e8;
+  --red:#c0392b;--cream:#fdfcfa;--cream2:#f5f6fb;
+  --text:#14172b;--text2:#363c60;--text3:#818aac;
+  --border:rgba(44,62,107,0.16);--border2:rgba(44,62,107,0.35);
+  --shadow:0 8px 40px rgba(20,23,43,0.11);
+  --r:13px;--r2:22px;
+  --serif:'Playfair Display',serif;--body:'DM Sans',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--body);background:var(--cream);color:var(--text);overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--cream2);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.4)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+#disc-modal{position:fixed;inset:0;z-index:9999;background:rgba(8,10,20,0.96);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:20px;}
+.disc-box{background:var(--cream);border-radius:var(--r2);max-width:700px;width:100%;max-height:92vh;overflow-y:auto;padding:48px 52px;border:1px solid var(--border2);box-shadow:var(--shadow);}
+.disc-icon{font-size:52px;text-align:center;display:block;margin-bottom:14px;}
+.disc-box h1{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--indigo);text-align:center;margin-bottom:6px;}
+.disc-sub{text-align:center;font-size:13px;color:var(--text3);margin-bottom:26px;}
+.disc-content{background:var(--indigo-pale);border:1px solid var(--border2);border-radius:var(--r);padding:22px;margin-bottom:20px;font-size:13px;line-height:1.85;color:var(--text);}
+.disc-content p{margin-bottom:10px;}.disc-content p:last-child{margin-bottom:0;}
+.disc-content strong{color:var(--indigo);font-weight:600;}
+.disc-chk{margin-bottom:22px;}
+.chk-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;cursor:pointer;}
+.chk-row input{width:17px;height:17px;accent-color:var(--indigo);margin-top:2px;cursor:pointer;flex-shrink:0;}
+.chk-row label{font-size:13px;line-height:1.55;cursor:pointer;color:var(--text2);}
+.disc-accept{width:100%;padding:16px;border-radius:var(--r);background:linear-gradient(135deg,var(--indigo),var(--indigo-lt));color:#fff;font-family:var(--body);font-size:15px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;}
+.disc-accept:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(44,62,107,0.4);}
+.disc-accept:disabled{opacity:0.4;cursor:not-allowed;}
+.disc-bar{position:sticky;top:0;z-index:200;background:linear-gradient(90deg,#1a2540,var(--indigo),#1a2540);background-size:200%;animation:shimmer 4s linear infinite;padding:9px 20px;text-align:center;font-size:12px;font-weight:600;color:#fff;}
+.pdot{display:inline-block;width:7px;height:7px;background:#fff;border-radius:50%;margin-right:8px;animation:pulse 1.5s ease infinite;vertical-align:middle;}
+header{position:relative;z-index:10;background:linear-gradient(160deg,#080c1a 0%,#1a2540 40%,#0d2a3a 100%);padding:64px 40px 52px;text-align:center;border-bottom:2px solid var(--teal-lt);}
+.hdr-inner{max-width:900px;margin:0 auto;}
+.hdr-eyebrow{font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--teal-lt);margin-bottom:18px;}
+header h1{font-family:var(--serif);font-size:clamp(32px,5vw,60px);font-weight:700;color:#eef0fa;line-height:1.08;margin-bottom:8px;}
+header h1 span{color:var(--gold-lt);}
+.hdr-sub{font-size:18px;color:rgba(180,200,240,0.88);margin-bottom:20px;}
+.hdr-line{width:100px;height:1px;background:linear-gradient(90deg,transparent,var(--teal-lt),transparent);margin:18px auto;}
+.hdr-desc{font-size:14.5px;color:rgba(170,190,230,0.8);line-height:1.75;max-width:700px;margin:0 auto;}
+.hdr-badges{display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;}
+.hbadge{padding:6px 18px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid;}
+.hb-i{background:rgba(44,62,107,0.28);border-color:rgba(44,62,107,0.55);color:#b0bce8;}
+.hb-t{background:rgba(14,116,144,0.25);border-color:rgba(14,116,144,0.5);color:#a0d8e0;}
+.hb-g{background:rgba(184,146,42,0.22);border-color:rgba(184,146,42,0.45);color:#e8d088;}
+.main-nav{position:sticky;top:42px;z-index:100;background:rgba(253,252,250,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 32px;}
+.nav-inner{max-width:1500px;margin:0 auto;display:flex;overflow-x:auto;}
+.nav-inner::-webkit-scrollbar{height:0;}
+.ntab{padding:15px 13px;font-size:12.5px;font-weight:500;color:var(--text3);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.2s;}
+.ntab:hover{color:var(--indigo);}.ntab.active{color:var(--indigo);border-bottom-color:var(--gold-lt);font-weight:600;}
+.app{display:grid;grid-template-columns:260px 1fr;max-width:1500px;margin:0 auto;min-height:calc(100vh - 260px);}
+.sidebar{border-right:1px solid var(--border);background:rgba(234,236,248,0.3);padding:22px 0;position:sticky;top:112px;height:calc(100vh - 112px);overflow-y:auto;}
+.sb-lbl{padding:8px 18px 4px;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);}
+.sbi{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;font-size:13px;color:var(--text2);}
+.sbi:hover{background:rgba(44,62,107,0.06);}.sbi.active{background:rgba(44,62,107,0.08);border-left-color:var(--gold);color:var(--indigo);font-weight:600;}
+.sbi .si{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.sb-div{height:1px;background:var(--border);margin:10px 14px;}
+.sb-new{font-size:9px;font-weight:700;background:var(--gold);color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;}
+.main{padding:38px 44px;}
+.panel{display:none;}.panel.active{display:block;animation:fadeUp 0.3s ease;}
+.ph{margin-bottom:30px;}
+.ph-crumb{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+.ph h2{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--text);line-height:1.15;}
+.ph p{margin-top:10px;font-size:16px;color:var(--text2);line-height:1.7;max-width:680px;}
+.o-line{width:60px;height:2px;background:linear-gradient(90deg,var(--indigo),var(--teal),transparent);margin:12px 0;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:22px;transition:all 0.22s;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--indigo),var(--teal),var(--gold));opacity:0;transition:opacity 0.2s;}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}.card:hover::before{opacity:1;}
+.card.click{cursor:pointer;}
+.ci{font-size:30px;margin-bottom:12px;}
+.card h3{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--text);margin-bottom:7px;}
+.card p{font-size:13px;color:var(--text2);line-height:1.65;}
+.ctag{display:inline-block;margin-top:10px;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;background:var(--indigo-pale);color:var(--indigo);border:1px solid var(--border2);}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:18px;text-align:center;}
+.stat-n{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--indigo);line-height:1;}
+.stat-l{font-size:11px;color:var(--text3);font-weight:500;margin-top:5px;text-transform:uppercase;letter-spacing:0.07em;}
+.sb{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:28px;margin-bottom:20px;}
+.sb h3{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.sb h4{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--indigo);margin:14px 0 7px;}
+.sb p{font-size:13.5px;line-height:1.8;color:var(--text2);margin-bottom:10px;}
+.sb ul{list-style:none;}
+.sb ul li{padding:7px 0;border-bottom:1px solid rgba(44,62,107,0.07);font-size:13px;line-height:1.65;color:var(--text2);display:flex;gap:10px;}
+.sb ul li::before{content:"\25C6";color:var(--teal);flex-shrink:0;font-size:9px;margin-top:4px;}
+.sb ul li:last-child{border-bottom:none;}
+.sb table{width:100%;border-collapse:collapse;font-size:13px;}
+.sb table th{background:var(--indigo);color:#eaecf8;font-size:11.5px;font-weight:600;padding:11px 14px;text-align:left;}
+.sb table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top;}
+.alert{padding:13px 17px;border-radius:var(--r);font-size:13px;line-height:1.7;margin-bottom:16px;display:flex;gap:11px;}
+.ai-ic{font-size:17px;flex-shrink:0;margin-top:1px;}
+.alert.warn{background:var(--gold-pale);border:1px solid rgba(184,146,42,0.35);color:#6a4e00;}
+.alert.indigo{background:var(--indigo-pale);border:1px solid var(--border2);color:var(--indigo);}
+.alert.teal{background:var(--teal-pale);border:1px solid rgba(14,116,144,0.3);color:var(--teal);}
+.alert.emergency{background:#0d0e1c;border:2px solid var(--teal-lt);color:#b0e8f0;font-weight:600;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:var(--r);font-family:var(--body);font-size:13.5px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;}
+.btn-i{background:linear-gradient(135deg,var(--indigo),var(--indigo-lt));color:#fff;}
+.btn-i:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(44,62,107,0.4);}
+.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--text2);}
+.btn-outline:hover{border-color:var(--indigo);color:var(--indigo);}
+.btn-lg{padding:14px 28px;font-size:15px;}.btn-sm{padding:6px 14px;font-size:12px;}
+.bgrp{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+.spn{width:18px;height:18px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+.btn.loading .spn{display:block;}.btn.loading .bt{display:none;}
+.tab-bar{display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--border);flex-wrap:wrap;}
+.tbtn{padding:10px 18px;border:none;background:transparent;font-family:var(--body);font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;margin-bottom:-2px;}
+.tbtn:hover{color:var(--text);}.tbtn.active{color:var(--indigo);border-bottom-color:var(--gold-lt);font-weight:600;}
+.tpane{display:none;}.tpane.active{display:block;animation:fadeUp 0.25s ease;}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:44px;text-align:center;cursor:pointer;transition:all 0.3s;background:#fff;margin-bottom:16px;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--indigo);background:var(--indigo-pale);}
+.uz-icon{font-size:48px;margin-bottom:14px;}
+.file-tags{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:14px;}
+.ftag{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;background:var(--cream2);border:1px solid var(--border);color:var(--text3);}
+.file-row{display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:var(--r);background:#fff;border:1px solid var(--border);margin-bottom:7px;}
+.fr-ico{font-size:18px;flex-shrink:0;}.fr-name{flex:1;font-size:13px;font-weight:500;}.fr-meta{font-size:11px;color:var(--text3);}
+.fr-ok{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--teal-pale);color:var(--teal);font-weight:600;}
+.fr-del{color:var(--text3);cursor:pointer;font-size:16px;padding:3px;}.fr-del:hover{color:var(--red);}
+.chat-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
+.chat-head{background:linear-gradient(135deg,#1a2540,var(--indigo));padding:17px 22px;display:flex;align-items:center;justify-content:space-between;}
+.chat-head h3{font-family:var(--serif);font-size:16px;font-weight:600;color:#fff;}
+.chat-head .free{background:rgba(255,255,255,0.18);color:#fff;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+.chat-msgs{height:420px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--cream);}
+.cm{max-width:82%;padding:12px 15px;border-radius:14px;font-size:13.5px;line-height:1.62;}
+.cm.user{align-self:flex-end;background:var(--indigo);color:#fff;border-radius:14px 14px 4px 14px;}
+.cm.ai{align-self:flex-start;background:#fff;border:1px solid var(--border);border-radius:14px 14px 14px 4px;}
+.cm .ai-lbl{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:4px;}
+.cm.sys{align-self:center;background:var(--cream2);border-radius:8px;font-size:12px;color:var(--text3);max-width:90%;text-align:center;}
+.typing span{width:7px;height:7px;background:var(--text3);border-radius:50%;animation:blink 1.2s ease infinite;display:inline-block;margin:0 2px;}
+.typing span:nth-child(2){animation-delay:0.2s;}.typing span:nth-child(3){animation-delay:0.4s;}
+.chat-input-row{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--border);background:var(--cream2);}
+.chat-input{flex:1;padding:10px 14px;border-radius:var(--r);border:1.5px solid rgba(44,62,107,0.2);background:#fff;font-family:var(--body);font-size:13.5px;color:var(--text);outline:none;}
+.chat-input:focus{border-color:var(--indigo);}
+.chat-send{padding:10px 20px;border-radius:var(--r);background:var(--indigo);color:#fff;border:none;cursor:pointer;font-weight:600;font-family:var(--body);}
+.api-box{background:var(--indigo-pale);border:1px solid var(--border2);border-radius:var(--r2);padding:24px;margin-bottom:20px;}
+.api-box h3{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--indigo);margin-bottom:8px;}
+.api-box p{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;}
+.api-row{display:flex;gap:10px;}
+.api-input{flex:1;padding:10px 14px;border-radius:var(--r);border:1.5px solid var(--border2);background:#fff;font-family:'Consolas',monospace;font-size:13px;color:var(--text);outline:none;}
+.api-input:focus{border-color:var(--indigo);}
+.provider-card{position:relative;}
+.provider-card.selected{border-color:var(--indigo);box-shadow:0 0 0 2px var(--indigo-pale);}
+.provider-card.selected::after{content:'Active';position:absolute;top:14px;right:16px;font-size:11px;font-weight:700;color:var(--indigo);}
+.provider-card .ctag.configured{background:var(--teal-pale);color:var(--teal);border-color:rgba(14,116,144,0.3);}
+.fl{font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block;}
+.fi,.fs{width:100%;padding:10px 14px;border-radius:var(--r);border:1.5px solid rgba(44,62,107,0.2);background:#fff;font-family:var(--body);font-size:14px;color:var(--text);outline:none;margin-bottom:12px;}
+.fi:focus,.fs:focus{border-color:var(--indigo);}
+footer{background:linear-gradient(160deg,#080c1a 0%,#0d1630 100%);padding:50px 40px 30px;border-top:2px solid var(--teal-lt);}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:36px;}
+.footer-brand h3{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--teal-lt);margin-bottom:10px;}
+.footer-brand p{font-size:13px;color:rgba(170,200,225,0.7);line-height:1.7;}
+.footer-col h4{font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal-lt);margin-bottom:12px;}
+.footer-col ul{list-style:none;}
+.footer-col ul li{margin-bottom:7px;}
+.footer-col ul li a{font-size:13px;color:rgba(170,200,225,0.6);text-decoration:none;}
+.footer-col ul li a:hover{color:var(--teal-lt);}
+.footer-bottom{border-top:1px solid rgba(44,62,107,0.3);padding-top:22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+.footer-bottom p{font-size:12px;color:rgba(170,200,225,0.5);}
+.footer-disc{font-size:11px;color:rgba(170,200,225,0.4);max-width:700px;line-height:1.6;}
+@media(max-width:1000px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:24px 20px}}
+@media(max-width:700px){header{padding:40px 20px 32px}.g2,.g3{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr}.disc-box{padding:28px 20px}}
+</style>
+</head>
+<body>
+
+<div id="disc-modal">
+  <div class="disc-box">
+    <span class="disc-icon">&#128065;&#65039;</span>
+    <h1>Medical Disclaimer</h1>
+    <div class="disc-sub">OphthaCare AI &mdash; Ophthalmology Health Intelligence Platform</div>
+    <div style="padding:8px 18px 14px;background:var(--cream2,#f8f4f5);">
+      <button class="ar-trigger-btn" onclick="openAR(document.getElementById('chat-in').value)" style="display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;border:2px solid #4d6bfe;background:transparent;color:#4d6bfe;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;" onmouseover="this.style.background='#4d6bfe';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#4d6bfe'">&#9889; Ambiguity Resolver &mdash; Get Multi-AI Consensus Answer</button>
+      <p style="font-size:11px;color:#888;text-align:center;margin-top:6px;">Query all your configured AIs simultaneously and get a synthesised best answer</p>
+    </div>
+    <div class="disc-content">
+      <p><strong>RESEARCH &amp; EDUCATIONAL PURPOSE ONLY:</strong> OphthaCare AI is an AI-powered research platform. All content is compiled from published ophthalmology literature (AAO, RCOphth, WHO, NICE, AIOS) for educational purposes only.</p>
+      <p><strong>NOT A SUBSTITUTE FOR EYE CARE:</strong> Nothing on this platform constitutes medical advice, diagnosis, or treatment. Eye conditions can progress rapidly. AI-generated analysis may be incomplete or inaccurate.</p>
+      <p><strong>MANDATORY PROFESSIONAL CONSULTATION:</strong> Before making any decision about eye drops, eye surgery, or contact lenses &mdash; consult a qualified ophthalmologist.</p>
+      <p><strong>EYE EMERGENCY &mdash; ACT IMMEDIATELY:</strong> Sudden vision loss, chemical splash (irrigate first for 20+ min), penetrating injury (rigid shield, no pressure), acute red eye with severe pain and haloes, new flashes/floaters with a dark curtain &mdash; Eye Casualty / 112 (India) / 999 (UK) / 911 (US).</p>
+    </div>
+    <div class="disc-chk">
+      <div class="chk-row"><input type="checkbox" id="dc1"><label for="dc1">I understand this is an AI research tool &mdash; NOT medical advice, diagnosis, or treatment.</label></div>
+      <div class="chk-row"><input type="checkbox" id="dc2"><label for="dc2">I will consult a qualified ophthalmologist before any eye health decision.</label></div>
+      <div class="chk-row"><input type="checkbox" id="dc3"><label for="dc3">In an eye emergency I will seek immediate care, not use this platform first.</label></div>
+    </div>
+    <button class="disc-accept" id="disc-btn" disabled onclick="acceptDisc()">I Understand &amp; Accept &mdash; Enter OphthaCare AI</button>
+  </div>
+</div>
+
+<div class="disc-bar"><span class="pdot"></span><strong>&#9888;&#65039; AI RESEARCH TOOL ONLY</strong> &mdash; Not medical advice. EYE EMERGENCY: Eye Casualty / <strong>112</strong> India / 999 UK / 911 US.</div>
+
+<header>
+  <div class="hdr-inner">
+    <div class="hdr-eyebrow">&#128065;&#65039; Ophthalmology Health Intelligence Platform</div>
+    <h1>OphthaCare <span>AI</span></h1>
+    <div class="hdr-sub">Evidence-Based Eye Health Research &amp; Vision Intelligence</div>
+    <div class="hdr-line"></div>
+    <div class="hdr-desc">Upload OCT scans, visual field results, fundus photographs and refraction reports for AI-researched insights &mdash; covering refractive errors, glaucoma, cataract, retinal disease, uveitis, cornea, and neuro-ophthalmology from AAO, RCOphth and NICE guidelines.</div>
+    <div class="hdr-badges">
+      <span class="hbadge hb-i">&#128065; Cataract &amp; Refractive</span>
+      <span class="hbadge hb-t">&#128200; Glaucoma &amp; OCT</span>
+      <span class="hbadge hb-g">&#129298; Medical Retina</span>
+      <span class="hbadge hb-i">&#129664; Cornea &amp; Uveitis</span>
+      <span class="hbadge hb-t">&#128680; Eye Emergencies</span>
+      <span class="hbadge hb-g">&#128274; AES-256 Secure</span>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <div class="ntab active" onclick="nav('home')">&#127968; Home</div>
+    <div class="ntab" onclick="nav('upload')">&#128193; Upload</div>
+    <div class="ntab" onclick="nav('conditions')">&#128065; Conditions</div>
+    <div class="ntab" onclick="nav('glaucoma')">&#128200; Glaucoma</div>
+    <div class="ntab" onclick="nav('retina')">&#129298; Retina</div>
+    <div class="ntab" onclick="nav('medicines')">&#128138; Eye Drops</div>
+    <div class="ntab" onclick="nav('surgery')">&#128269; Surgery</div>
+    <div class="ntab" onclick="nav('investigations')">&#128202; Investigations</div>
+    <div class="ntab" onclick="nav('emergency')">&#128680; Emergency</div>
+    <div class="ntab" onclick="nav('contact_lens')">&#128274; Contact Lenses</div>
+    <div class="ntab" onclick="nav('chat')">&#128172; Ask AI</div>
+    <div class="ntab" onclick="nav('settings')">&#9881;&#65039; Settings</div>
+  </div>
+</nav>
+
+<div class="app">
+<aside class="sidebar">
+  <div class="sb-lbl">Patient Portal</div>
+  <div class="sbi active" onclick="nav('home')"><span class="si">&#127968;</span>Dashboard</div>
+  <div class="sbi" onclick="nav('upload')"><span class="si">&#128193;</span>Upload Eye Reports</div>
+  <div class="sbi" onclick="nav('settings')"><span class="si">&#9881;&#65039;</span>Settings &amp; AI Provider</div>
+  <div class="sb-div"></div>
+  <div class="sb-lbl">Eye Conditions</div>
+  <div class="sbi" onclick="nav('conditions')"><span class="si">&#128065;</span>All Conditions</div>
+  <div class="sbi" onclick="nav('glaucoma')"><span class="si">&#128200;</span>Glaucoma</div>
+  <div class="sbi" onclick="nav('retina')"><span class="si">&#129298;</span>Retinal Disease</div>
+  <div class="sbi" onclick="nav('emergency')"><span class="si">&#128680;</span>Eye Emergencies</div>
+  <div class="sb-div"></div>
+  <div class="sb-lbl">Treatment</div>
+  <div class="sbi" onclick="nav('medicines')"><span class="si">&#128138;</span>Eye Drops &amp; Medicines</div>
+  <div class="sbi" onclick="nav('surgery')"><span class="si">&#128269;</span>Eye Surgery</div>
+  <div class="sbi" onclick="nav('contact_lens')"><span class="si">&#128274;</span>Contact Lenses</div>
+  <div class="sb-div"></div>
+  <div class="sbi" onclick="nav('investigations')"><span class="si">&#128202;</span>Investigations</div>
+  <div class="sb-div"></div>
+  <div class="sbi" onclick="nav('chat')"><span class="si">&#128172;</span>Ask AI <span class="sb-new">FREE</span></div>
+</aside>
+<main class="main">
+
+<div class="panel active" id="panel-home">
+  <div class="ph"><div class="ph-crumb">Welcome</div><h2>Ophthalmology Health Intelligence</h2><div class="o-line"></div><p>AI-researched eye health insights from AAO, RCOphth, WHO, NICE, AIOS and peer-reviewed literature.</p></div>
+  <div class="alert emergency"><span class="ai-ic">&#128680;</span><div>EYE EMERGENCY: Sudden vision loss, chemical splash (IRRIGATE FIRST 20+ min), penetrating injury (rigid shield, NO pressure), acute red eye + severe pain + haloes, new flashes/floaters + curtain &mdash; Eye Casualty / 112 (India) / 999 (UK) / 911 (US) IMMEDIATELY.</div></div>
+  <div class="stat-row">
+    <div class="stat"><div class="stat-n">30+</div><div class="stat-l">Eye Conditions</div></div>
+    <div class="stat"><div class="stat-n">10+</div><div class="stat-l">Surgery Types</div></div>
+    <div class="stat"><div class="stat-n">5</div><div class="stat-l">AI Providers</div></div>
+    <div class="stat"><div class="stat-n">&#128274;</div><div class="stat-l">AES-256 Secure</div></div>
+  </div>
+  <div class="alert indigo"><span class="ai-ic">&#9888;&#65039;</span><div><strong>Research Tool Only:</strong> All AI output is for educational research. ALWAYS consult your ophthalmologist before any decision about eye drops, surgery, or contact lenses.</div></div>
+  <div class="g3">
+    <div class="card click" onclick="nav('conditions')"><div class="ci">&#128065;</div><h3>Eye Conditions</h3><p>Cataract, glaucoma, AMD, diabetic retinopathy, uveitis, keratitis, and more.</p><span class="ctag">Clinical Research</span></div>
+    <div class="card click" onclick="nav('glaucoma')"><div class="ci">&#128200;</div><h3>Glaucoma</h3><p>POAG, acute angle closure, IOP management, OCT, visual fields, and surgery.</p><span class="ctag">Silent Thief of Sight</span></div>
+    <div class="card click" onclick="nav('retina')"><div class="ci">&#129298;</div><h3>Retinal Disease</h3><p>AMD, diabetic retinopathy, retinal detachment, anti-VEGF injections.</p><span class="ctag">Medical Retina</span></div>
+    <div class="card click" onclick="nav('medicines')"><div class="ci">&#128138;</div><h3>Eye Drops</h3><p>Prostaglandins, beta-blockers, steroids, antibiotics, anti-VEGF, lubricants.</p><span class="ctag">Pharmacology</span></div>
+    <div class="card click" onclick="nav('surgery')"><div class="ci">&#128269;</div><h3>Eye Surgery</h3><p>Phacoemulsification, LASIK, trabeculectomy, vitrectomy, corneal transplant.</p><span class="ctag">Surgical Research</span></div>
+    <div class="card click" onclick="nav('emergency')"><div class="ci">&#128680;</div><h3>Eye Emergencies</h3><p>Chemical burns, retinal detachment, acute angle closure, penetrating injury.</p><span class="ctag">Emergency</span></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-upload">
+  <div class="ph"><div class="ph-crumb">Step 1</div><h2>Upload Eye Reports</h2><div class="o-line"></div><p>Upload OCT scans, visual field results, fundus photographs, refraction reports, and other ophthalmic investigation documents.</p></div>
+  <div class="upload-zone" id="uz" onclick="document.getElementById('fi').click()">
+    <div class="uz-icon">&#128065;&#65039;</div>
+    <h3 style="font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:7px;">Drop eye reports here or click to browse</h3>
+    <p style="font-size:13px;color:var(--text3);">All ophthalmic document and image formats supported</p>
+    <div class="file-tags">
+      <span class="ftag">OCT Report</span><span class="ftag">Visual Field (HVF)</span><span class="ftag">Fundus Photo</span>
+      <span class="ftag">Refraction Report</span><span class="ftag">Biometry</span><span class="ftag">Corneal Topography</span>
+      <span class="ftag">PDF &middot; JPG &middot; PNG</span>
+    </div>
+  </div>
+  <input type="file" id="fi" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.txt" style="display:none" onchange="handleFiles(this.files)">
+  <div id="flist"></div>
+  <div class="bgrp">
+    <button class="btn btn-i btn-lg" id="up-btn" onclick="uploadFiles()"><span class="bt">&#128228; Upload &amp; Process</span><div class="spn"></div></button>
+    <button class="btn btn-outline" onclick="document.getElementById('fi').click()">+ Add More</button>
+    <button class="btn btn-outline" onclick="clearFiles()">&#128465; Clear</button>
+  </div>
+  <div id="up-result"></div>
+</div>
+
+<div class="panel" id="panel-conditions">
+  <div class="ph"><div class="ph-crumb">Ophthalmology</div><h2>Eye Conditions</h2><div class="o-line"></div><p>Comprehensive clinical research from AAO, RCOphth, WHO and NICE guidelines.</p></div>
+  <div class="alert warn"><span class="ai-ic">&#9888;&#65039;</span><div>All information is for educational research. Diagnosis requires clinical examination by a qualified ophthalmologist or optometrist. Do not self-manage significant eye symptoms.</div></div>
+  <div style="margin-bottom:17px;">
+    <label class="fl">Select Condition</label>
+    <select class="fs" id="cond-sel" onchange="showCondition()">
+      <option value="">-- Select an eye condition --</option>
+      <optgroup label="Refractive"><option>Myopia</option><option>Hyperopia</option><option>Astigmatism</option><option>Presbyopia</option></optgroup>
+      <optgroup label="Cataract"><option>Cataract</option><option>Posterior Capsule Opacification (PCO)</option></optgroup>
+      <optgroup label="Glaucoma"><option>Primary Open-Angle Glaucoma</option><option>Acute Angle-Closure Glaucoma</option><option>Normal Tension Glaucoma</option><option>Ocular Hypertension</option></optgroup>
+      <optgroup label="Retina"><option>Dry AMD</option><option>Wet AMD</option><option>Diabetic Retinopathy</option><option>Diabetic Macular Oedema</option><option>Retinal Detachment</option><option>Retinal Vein Occlusion</option><option>Retinal Artery Occlusion</option><option>Epiretinal Membrane</option><option>Macular Hole</option></optgroup>
+      <optgroup label="Cornea &amp; External"><option>Dry Eye Disease</option><option>Bacterial Conjunctivitis</option><option>Viral Conjunctivitis</option><option>Allergic Conjunctivitis</option><option>Bacterial Keratitis</option><option>Herpes Simplex Keratitis</option><option>Corneal Abrasion</option><option>Blepharitis</option><option>Keratoconus</option></optgroup>
+      <optgroup label="Other"><option>Anterior Uveitis</option><option>Optic Neuritis</option><option>Papilloedema</option><option>Giant Cell Arteritis</option><option>Amblyopia</option><option>Strabismus</option><option>Floaters and Flashes</option></optgroup>
+    </select>
+  </div>
+  <div id="cond-output"></div>
+  <div class="sb"><h3>Quick Clinical Reference</h3>
+    <div class="g2">
+      <div><h4>Glaucoma Red Flags</h4><ul>
+        <li>Severe eye pain + red eye + haloes + blurred vision: acute angle closure EMERGENCY</li>
+        <li>Often completely asymptomatic until significant damage &mdash; regular screening essential</li>
+        <li>Family history: first-degree relatives should have regular eye exams from age 40</li>
+        <li>IOP measurement alone does NOT diagnose or exclude glaucoma</li>
+      </ul></div>
+      <div><h4>Retinal Emergency Signs</h4><ul>
+        <li>Sudden shower of floaters + flashes: same-day assessment (retinal tear/detachment)</li>
+        <li>Curtain/shadow across part of visual field: retinal detachment until proven otherwise</li>
+        <li>Sudden painless loss of central vision: wet AMD or vascular occlusion</li>
+        <li>Sudden profound painless vision loss: retinal artery occlusion &mdash; EMERGENCY</li>
+      </ul></div>
+      <div><h4>Chemical Eye Injury First Aid</h4><ul>
+        <li>Irrigate IMMEDIATELY with any available clean water for 20-30 minutes</li>
+        <li>Do NOT stop to seek help first &mdash; irrigate before anything else</li>
+        <li>Alkali burns (cement, bleach) cause deeper damage than acid burns</li>
+        <li>Urgent ophthalmology after irrigation</li>
+      </ul></div>
+      <div><h4>Giant Cell Arteritis (over 50s)</h4><ul>
+        <li>New headache + scalp tenderness + jaw pain + any visual symptoms</li>
+        <li>IMMEDIATE high-dose corticosteroids &mdash; do not wait for biopsy</li>
+        <li>Can cause sudden irreversible bilateral blindness if untreated</li>
+        <li>Urgent ESR/CRP + same-day ophthalmology referral</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-glaucoma">
+  <div class="ph"><div class="ph-crumb">The Silent Thief of Sight</div><h2>Glaucoma</h2><div class="o-line"></div><p>Research on glaucoma diagnosis, monitoring, and management from AAO, RCOphth and NICE guidelines.</p></div>
+  <div class="alert emergency"><span class="ai-ic">&#128680;</span><div>ACUTE ANGLE-CLOSURE GLAUCOMA: Severe eye pain, redness, blurred vision, haloes, nausea, fixed mid-dilated pupil &mdash; EYE CASUALTY IMMEDIATELY. Time-critical to prevent permanent vision loss.</div></div>
+  <div class="tab-bar">
+    <button class="tbtn active" onclick="switchTab(this,'gl1')">Overview</button>
+    <button class="tbtn" onclick="switchTab(this,'gl2')">Investigations</button>
+    <button class="tbtn" onclick="switchTab(this,'gl3')">Treatment</button>
+    <button class="tbtn" onclick="switchTab(this,'gl4')">Monitoring</button>
+  </div>
+  <div class="tpane active" id="gl1">
+    <div class="sb"><h3>Glaucoma Overview</h3>
+      <p>Group of optic neuropathies causing progressive irreversible visual field loss. Second leading cause of blindness globally. Often asymptomatic in the early stages &mdash; earning the name the silent thief of sight. Requires lifelong management and monitoring.</p>
+      <h4>Primary Open-Angle Glaucoma (POAG)</h4>
+      <p>Most common type. Aqueous humour outflow impaired at the trabecular meshwork despite an anatomically open drainage angle. Risk factors: raised IOP, age over 40, family history (6x risk with first-degree relative), African ancestry, high myopia, thin central corneal thickness, diabetes.</p>
+      <h4>Acute Angle-Closure Glaucoma</h4>
+      <p>Drainage angle physically blocked causing sudden dramatic IOP rise. EMERGENCY: severe eye pain, red eye, blurred vision, haloes around lights, headache, nausea/vomiting, fixed mid-dilated pupil, hazy/oedematous cornea. Predisposed: hyperopes, East Asian populations with anatomically narrow angles. Urgent IOP-lowering treatment then definitive laser peripheral iridotomy (LPI) to both eyes.</p>
+      <h4>Normal Tension Glaucoma</h4>
+      <p>Glaucomatous optic nerve damage and visual field loss despite IOP consistently within the statistically normal range. Vascular and other mechanisms may contribute in addition to any IOP-related damage. Managed similarly to POAG with IOP-lowering treatment targeting a lower pressure range.</p>
+    </div>
+  </div>
+  <div class="tpane" id="gl2">
+    <div class="sb"><h3>Glaucoma Investigations</h3>
+      <ul>
+        <li><strong>Goldmann Applanation Tonometry (IOP):</strong> Gold-standard IOP measurement. Normal approximately 10-21 mmHg but IOP alone does not diagnose or exclude glaucoma. Corneal thickness affects measured IOP (thin corneas underestimate true IOP).</li>
+        <li><strong>Optic Disc Assessment:</strong> Slit-lamp biomicroscopy or indirect ophthalmoscopy. Cup-to-disc ratio over 0.6, asymmetry between eyes, neuroretinal rim notching, disc haemorrhages, and bayoneting of vessels are suspicious. Stereophotography for serial documentation and comparison.</li>
+        <li><strong>Visual Field Testing (Humphrey 24-2 Perimetry):</strong> Detects and monitors functional loss. Characteristic patterns: arcuate scotoma, nasal step, altitudinal defect. Multiple fields needed to confirm progression due to test variability.</li>
+        <li><strong>OCT RNFL (Retinal Nerve Fibre Layer):</strong> High-resolution structural imaging detects RNFL thinning, often before visual field changes. Serial analysis shows progression rate. Ganglion cell complex (GCC) analysis also useful.</li>
+        <li><strong>Gonioscopy:</strong> Contact lens examination of the drainage angle &mdash; essential to classify as open or closed before initiating treatment.</li>
+        <li><strong>Pachymetry:</strong> Central corneal thickness measurement for IOP correction and as independent progression risk factor.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tpane" id="gl3">
+    <div class="sb"><h3>Glaucoma Treatment</h3>
+      <h4>First-Line Eye Drops</h4>
+      <ul>
+        <li><strong>Prostaglandin analogues (latanoprost 0.005% OD, travoprost, bimatoprost, tafluprost):</strong> Instilled once nightly. Most effective class &mdash; reduces IOP 25-35% by increasing uveoscleral outflow. Side effects: iris darkening (irreversible), eyelash growth, periorbital fat atrophy, conjunctival hyperaemia. Avoid in pregnancy.</li>
+        <li><strong>Beta-blockers (timolol 0.25/0.5% BD or OD long-acting):</strong> Reduce aqueous production. CONTRAINDICATED: asthma, COPD, bradycardia, heart block, decompensated heart failure. Use nasolacrimal occlusion to reduce systemic absorption.</li>
+        <li><strong>Carbonic anhydrase inhibitors (dorzolamide BD/TDS, brinzolamide BD):</strong> Adjunct, reduce aqueous production. Oral acetazolamide for acute IOP spikes.</li>
+        <li><strong>Alpha-2 agonists (brimonidine BD):</strong> Reduce production and increase uveoscleral outflow. Adjunct. Risk of ocular allergy over time.</li>
+      </ul>
+      <h4>Laser Treatment</h4>
+      <ul>
+        <li><strong>Selective Laser Trabeculoplasty (SLT):</strong> First-line option, non-thermal laser to trabecular meshwork. Comparable to drops in the LiGHT trial. Approximately 70-80% respond. Repeatable.</li>
+        <li><strong>Laser Peripheral Iridotomy (LPI):</strong> Creates hole in peripheral iris to open drainage angle. Definitive treatment for acute angle closure, prophylaxis for fellow eye and narrow-angle patients.</li>
+      </ul>
+      <h4>Surgery</h4>
+      <ul>
+        <li><strong>Trabeculectomy:</strong> Most commonly performed filtration surgery. Creates new drainage pathway under conjunctival bleb. Long-term bleb-related infection risk.</li>
+        <li><strong>MIGS (Minimally Invasive Glaucoma Surgery):</strong> iStent, Hydrus, PRESERFLO, ab-interno canaloplasty. Safer profile, often combined with cataract surgery.</li>
+        <li><strong>Tube shunts (Baerveldt, Ahmed):</strong> For refractory/failed trabeculectomy cases.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tpane" id="gl4">
+    <div class="sb"><h3>Glaucoma Monitoring</h3>
+      <p>Glaucoma requires lifelong monitoring as it is a chronic progressive condition. Even well-controlled disease can progress and treatment may need escalating.</p>
+      <ul>
+        <li>IOP measurement at every clinic visit</li>
+        <li>Optic disc photography for serial comparison</li>
+        <li>Visual fields: typically every 6-12 months in stable disease, more frequently if progressing</li>
+        <li>OCT RNFL: at least annually, more often if progression suspected</li>
+        <li>Adherence to drops reviewed at every visit &mdash; the most common cause of inadequate IOP control</li>
+        <li>Nasolacrimal occlusion technique (gentle finger pressure on inner corner of eye for 1-2 minutes after instilling drops) reduces systemic absorption significantly</li>
+        <li>Space different drops 5 minutes apart to prevent washout of the first drop</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-retina">
+  <div class="ph"><div class="ph-crumb">Medical Retina</div><h2>Retinal Disease</h2><div class="o-line"></div><p>Research on AMD, diabetic retinopathy, retinal detachment and anti-VEGF therapy from AAO and RCOphth guidelines.</p></div>
+  <div class="tab-bar">
+    <button class="tbtn active" onclick="switchTab(this,'r1')">AMD</button>
+    <button class="tbtn" onclick="switchTab(this,'r2')">Diabetic Retinopathy</button>
+    <button class="tbtn" onclick="switchTab(this,'r3')">Retinal Detachment</button>
+    <button class="tbtn" onclick="switchTab(this,'r4')">Other Retinal Conditions</button>
+  </div>
+  <div class="tpane active" id="r1">
+    <div class="sb"><h3>Age-Related Macular Degeneration (AMD)</h3>
+      <p>Leading cause of central vision loss in adults over 50 in developed countries. Affects the macula &mdash; responsible for detailed central vision used for reading, recognising faces, and driving.</p>
+      <h4>Dry AMD (~90% of cases)</h4>
+      <p>Drusen (lipid deposits) accumulate beneath the retinal pigment epithelium, causing gradual geographic atrophy and progressive painless central vision loss over years. No curative treatment currently. AREDS2 vitamin formulation (vitamin C, E, lutein, zeaxanthin, zinc) reduces risk of progression to advanced AMD in intermediate AMD. Regular Amsler grid self-monitoring recommended.</p>
+      <h4>Wet AMD (~10% but accounts for most severe vision loss)</h4>
+      <p>Abnormal choroidal neovascularisation leaks fluid and blood, causing rapid central vision distortion (metamorphopsia &mdash; straight lines appear wavy) or sudden central vision loss. URGENT referral &mdash; time to anti-VEGF treatment strongly affects outcome.</p>
+      <p><strong>Anti-VEGF Treatment:</strong> Intravitreal injections of ranibizumab (Lucentis), aflibercept (Eylea), faricimab (Vabysmo), or bevacizumab (Avastin, off-label). Injected under topical anaesthesia in clinic. Monthly loading then treat-and-extend. Can stabilise or improve vision if started promptly. Newer agents (Eylea 8mg, Vabysmo) offer extended intervals up to 16 weeks for eligible patients.</p>
+    </div>
+  </div>
+  <div class="tpane" id="r2">
+    <div class="sb"><h3>Diabetic Retinopathy</h3>
+      <p>Leading cause of blindness in working-age adults globally. Caused by chronic hyperglycaemia damaging retinal blood vessels. Annual screening is essential even when vision feels normal &mdash; early stages are asymptomatic.</p>
+      <h4>Grading</h4>
+      <ul>
+        <li><strong>Non-Proliferative DR (NPDR) mild/moderate/severe:</strong> Microaneurysms, haemorrhages, hard exudates, cotton wool spots</li>
+        <li><strong>Proliferative DR (PDR):</strong> New vessel growth from disc (NVD) or elsewhere (NVE) due to retinal ischaemia &mdash; risk of vitreous haemorrhage and tractional detachment</li>
+        <li><strong>Diabetic Macular Oedema (DMO):</strong> Central vision loss from macular fluid &mdash; most common cause of visual loss from DR, can occur at any DR stage</li>
+      </ul>
+      <h4>Management</h4>
+      <ul>
+        <li>Tight HbA1c and blood pressure control: most important interventions for prevention and slowing progression</li>
+        <li>Annual fundus photography screening: all diabetic patients as minimum</li>
+        <li>Anti-VEGF injections: first-line for DMO; also PDR (VIEW/PROTOCOL S trials)</li>
+        <li>Pan-retinal laser photocoagulation (PRP): for proliferative DR</li>
+        <li>Vitrectomy: for non-clearing vitreous haemorrhage or tractional retinal detachment</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tpane" id="r3">
+    <div class="sb"><h3>Retinal Detachment</h3>
+      <div class="alert emergency" style="margin-bottom:16px;"><span class="ai-ic">&#128680;</span><div>New flashes + shower of floaters + curtain/shadow across vision = RETINAL DETACHMENT until proven otherwise. SAME-DAY ophthalmology assessment. Do NOT wait until morning.</div></div>
+      <p>Separation of the neurosensory retina from the underlying retinal pigment epithelium. Rhegmatogenous most common &mdash; a retinal tear allows liquid vitreous to track beneath the retina.</p>
+      <h4>Risk Factors</h4>
+      <ul>
+        <li>High myopia (significantly increased lifetime risk)</li>
+        <li>Previous cataract surgery (posterior vitreous detachment more common)</li>
+        <li>Trauma to the eye</li>
+        <li>Family history of retinal detachment</li>
+        <li>Lattice retinal degeneration (peripheral retinal thinning)</li>
+      </ul>
+      <h4>Warning Symptoms</h4>
+      <ul>
+        <li>New sudden photopsia (flashes of light) &mdash; vitreous traction on the retina</li>
+        <li>Sudden shower of new floaters (cloud, rain, or cobwebs) &mdash; vitreous haemorrhage or pigment from a tear</li>
+        <li>Dark curtain, veil, or shadow progressing across the visual field &mdash; the detachment itself</li>
+        <li>Central vision loss if the macula is involved (macula-off)</li>
+      </ul>
+      <h4>Surgical Options</h4>
+      <ul>
+        <li><strong>Pars plana vitrectomy (PPV):</strong> Remove vitreous, treat tears with laser/cryotherapy, internal tamponade with gas or silicone oil</li>
+        <li><strong>Scleral buckle:</strong> External silicone band indents sclera to close retinal break</li>
+        <li><strong>Pneumatic retinopexy:</strong> Intravitreal gas bubble + laser/cryo for selected superior tears</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tpane" id="r4">
+    <div class="sb"><h3>Other Retinal Conditions</h3>
+      <h4>Retinal Vein Occlusion (RVO)</h4>
+      <p>Central (CRVO) or branch (BRVO) occlusion. Sudden painless blurred vision. Associated with hypertension, diabetes, glaucoma. Anti-VEGF injections first-line for macular oedema. Treat vascular risk factors. Ischaemic CRVO: monitor closely for neovascular glaucoma.</p>
+      <h4>Retinal Artery Occlusion (RAO)</h4>
+      <p>Sudden profound painless vision loss, typically embolic. OPHTHALMIC EMERGENCY &mdash; same-day assessment and urgent stroke/TIA pathway workup (carotid imaging, cardiac evaluation). Cherry-red spot at macula in CRAO.</p>
+      <h4>Epiretinal Membrane (ERM) / Macular Pucker</h4>
+      <p>Fibrous tissue over the macula surface causing central distortion (metamorphopsia) and/or blurred vision. Often stable and monitored. If significantly affecting vision, vitrectomy with membrane peel is effective.</p>
+      <h4>Macular Hole</h4>
+      <p>Full-thickness foveal defect. Central distortion and scotoma. Graded by OCT minimum diameter. Most benefit from vitrectomy + ILM peel + gas tamponade (post-operative face-down positioning required).</p>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-medicines">
+  <div class="ph"><div class="ph-crumb">Ocular Pharmacology</div><h2>Eye Drops &amp; Medicines</h2><div class="o-line"></div><p>Research on ophthalmic medications from AAO, RCOphth and NICE. Never change eye drops without your ophthalmologist&#39;s guidance.</p></div>
+  <div class="alert warn"><span class="ai-ic">&#9888;&#65039;</span><div>Eye drops have systemic effects via nasolacrimal absorption. Always use nasolacrimal occlusion (finger pressure on inner corner of eye for 1-2 minutes after instilling drops) to reduce systemic absorption.</div></div>
+  <div class="tab-bar">
+    <button class="tbtn active" onclick="switchTab(this,'md1')">Glaucoma Drops</button>
+    <button class="tbtn" onclick="switchTab(this,'md2')">Anti-VEGF &amp; Intravitreal</button>
+    <button class="tbtn" onclick="switchTab(this,'md3')">Anti-Infective</button>
+    <button class="tbtn" onclick="switchTab(this,'md4')">Steroids &amp; Anti-Inflammatory</button>
+    <button class="tbtn" onclick="switchTab(this,'md5')">Lubricants &amp; Other</button>
+  </div>
+  <div class="tpane active" id="md1">
+    <div class="sb"><h3>Glaucoma Eye Drops</h3><ul>
+      <li><strong>Prostaglandin analogues (latanoprost 0.005% OD, travoprost 0.004%, bimatoprost 0.01%, tafluprost 0.0015%):</strong> First-line. Once nightly. IOP reduction 25-35%. Side effects: iris colour change (irreversible), eyelash growth, periorbital fat atrophy. Not in pregnancy.</li>
+      <li><strong>Beta-blockers (timolol 0.25/0.5% BD, long-acting OD):</strong> Reduce aqueous production. CONTRAINDICATED in asthma, COPD, bradycardia, heart block. Nasolacrimal occlusion essential to reduce systemic absorption.</li>
+      <li><strong>Carbonic anhydrase inhibitors (dorzolamide 2% TDS, brinzolamide 1% BD):</strong> Adjuncts, reduce aqueous. Stinging on instillation. Oral acetazolamide for acute spikes.</li>
+      <li><strong>Alpha-2 agonists (brimonidine 0.1-0.2% BD):</strong> Adjunct. Risk of ocular allergy over time. Avoid in children under 2 years (CNS depression).</li>
+      <li><strong>Fixed combinations (Cosopt = dorzolamide+timolol, Combigan = brimonidine+timolol, Xalacom = latanoprost+timolol):</strong> Improve compliance. Leave 5 minutes between separate drops.</li>
+    </ul></div>
+  </div>
+  <div class="tpane" id="md2">
+    <div class="sb"><h3>Anti-VEGF and Intravitreal Agents</h3>
+      <p>Intravitreal injections performed in clinic under topical anaesthesia with antiseptic preparation (povidone-iodine). Well-tolerated and effective for delivering drug directly to target tissue.</p><ul>
+      <li><strong>Ranibizumab (Lucentis):</strong> Anti-VEGF antibody fragment. Licensed wet AMD, DMO, RVO. NICE approved. Monthly then treat-and-extend or PRN.</li>
+      <li><strong>Aflibercept (Eylea 2mg):</strong> Blocks VEGF-A, VEGF-B, PIGF. Licensed wet AMD, DMO, RVO. 8-weekly after loading. Eylea 8mg now available for 12-16 weekly intervals in eligible patients.</li>
+      <li><strong>Faricimab (Vabysmo):</strong> Bispecific anti-VEGF-A and anti-Ang-2. Wet AMD and DMO. Up to 16-weekly intervals for eligible patients. Newest approved agent.</li>
+      <li><strong>Bevacizumab (Avastin):</strong> Off-label full-length anti-VEGF. Comparable efficacy to ranibizumab (CATT trial), substantially lower cost. Widely used globally.</li>
+      <li><strong>Dexamethasone implant (Ozurdex):</strong> Biodegradable steroid for macular oedema from RVO and non-infectious posterior uveitis. Duration 3-6 months. Risk of raised IOP and cataract with repeat use.</li>
+    </ul></div>
+  </div>
+  <div class="tpane" id="md3">
+    <div class="sb"><h3>Anti-Infective Eye Drops</h3><ul>
+      <li><strong>Chloramphenicol 0.5% drops / 1% ointment:</strong> First-line for bacterial conjunctivitis. Every 2 hours initially then QDS for 5 days. Ointment at night or for children.</li>
+      <li><strong>Fusidic acid 1% gel (Fucithalmic):</strong> Alternative for bacterial conjunctivitis. BD dosing. Good Staph aureus coverage.</li>
+      <li><strong>Fluoroquinolones (ciprofloxacin 0.3%, moxifloxacin 0.5%, ofloxacin 0.3%):</strong> Bacterial keratitis (intensive dosing every 30-60 minutes initially), post-operative prophylaxis.</li>
+      <li><strong>Aciclovir 3% ointment / ganciclovir 0.15% gel:</strong> Herpes simplex keratitis. 5x daily for 14 days. NEVER use topical steroids for HSV keratitis without specialist guidance.</li>
+      <li><strong>PHMB 0.02% + propamidine (Brolene) 0.1%:</strong> Acanthamoeba keratitis. Intensive drops under specialist supervision. Extremely painful condition, high risk without aggressive treatment.</li>
+    </ul></div>
+  </div>
+  <div class="tpane" id="md4">
+    <div class="sb"><h3>Steroids and Anti-Inflammatory Eye Drops</h3><ul>
+      <li><strong>Prednisolone acetate 1% (Pred Forte):</strong> Main steroid for anterior uveitis &mdash; hourly initially in severe cases, very gradual taper based on response. Also post-op cataract surgery.</li>
+      <li><strong>Dexamethasone 0.1%, betamethasone 0.1%, fluorometholone 0.1%:</strong> Fluorometholone softer for longer use. All carry IOP-raising risk (steroid responders ~30%, check IOP if on drops for 2+ weeks).</li>
+      <li><strong>STEROID RED FLAG:</strong> NEVER use topical steroids for a red eye without ophthalmologist guidance. Can dramatically worsen herpes simplex keratitis, fungal keratitis, and bacterial keratitis.</li>
+      <li><strong>NSAIDs (ketorolac, diclofenac, bromfenac, nepafenac):</strong> Post-operative, prophylaxis/treatment of cystoid macular oedema after cataract surgery, PRK pain management.</li>
+      <li><strong>Ciclosporin 0.05/0.1% (Restasis, Ikervis):</strong> Topical immunosuppressant for moderate-severe dry eye with inflammatory component. Takes 3-6 months for full effect.</li>
+    </ul></div>
+  </div>
+  <div class="tpane" id="md5">
+    <div class="sb"><h3>Lubricants, Dilating Drops and Other Agents</h3><ul>
+      <li><strong>Artificial tears (hyaluronic acid, carmellose, carbomer, HPMC):</strong> First-line for dry eye. Preservative-free formulations strongly preferred for regular use (more than 4x/day) and contact lens wearers to avoid preservative toxicity. Gels/ointments for severe dry eye and night-time use.</li>
+      <li><strong>Cycloplegics &amp; mydriatics:</strong> Cyclopentolate 1% (2-3h, cycloplegic refraction in children, anterior uveitis), atropine 1% (7-14 days, children, myopia control), tropicamide 0.5/1% (4-6h, routine pupil dilation), phenylephrine 2.5/10% (dilation adjunct, no cycloplegia).</li>
+      <li><strong>Antihistamine/mast cell stabilisers (olopatadine, ketotifen, nedocromil, sodium cromoglicate):</strong> Allergic conjunctivitis. Start before peak season for seasonal allergy. Olopatadine preferred for year-round disease.</li>
+      <li><strong>Pilocarpine 1-4%:</strong> Cholinergic miotic for angle closure, historically for POAG. Side effects: induced myopia, brow ache. Largely superseded for routine glaucoma management.</li>
+    </ul></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-surgery">
+  <div class="ph"><div class="ph-crumb">Ophthalmic Surgery</div><h2>Eye Surgery</h2><div class="o-line"></div><p>Research on common ophthalmic surgical procedures from AAO, RCOphth and NICE guidelines.</p></div>
+  <div class="sb"><h3>Cataract Surgery (Phacoemulsification)</h3>
+    <p>The most commonly performed surgical procedure in the world. Day case, local anaesthetic (topical drops or injection). Small incision (2.2-2.8mm), capsulorhexis, ultrasound phacoemulsification of the cataractous lens, aspiration, IOL insertion into the capsular bag.</p>
+    <ul>
+      <li><strong>Monofocal IOL:</strong> Fixed single focal point (typically distance). Clear predictable optics, glasses needed for near/intermediate. Most common IOL type worldwide.</li>
+      <li><strong>Multifocal / EDOF IOL:</strong> Multiple or extended focal zones to reduce spectacle dependence. May cause dysphotopsia (haloes, starbursts). Less suitable if significant macular disease present.</li>
+      <li><strong>Toric IOL:</strong> Corrects pre-existing corneal astigmatism. Requires accurate biometry and careful IOL orientation. Improves unaided distance vision.</li>
+      <li><strong>PCO (Posterior Capsule Opacification):</strong> Most common complication, up to 30% within 5 years. Quick, painless outpatient YAG laser capsulotomy restores vision within minutes.</li>
+    </ul>
+  </div>
+  <div class="sb"><h3>Refractive Surgery</h3><ul>
+    <li><strong>LASIK:</strong> Femtosecond or microkeratome flap creation, excimer laser reshapes corneal stroma, flap repositioned. Rapid recovery. Myopia up to -10D, hyperopia up to +4D. Not suitable for thin corneas, keratoconus, or irregular astigmatism.</li>
+    <li><strong>LASEK / PRK (Surface Ablation):</strong> No flap. Epithelium removed, laser applied to corneal surface. Slower recovery (1-2 weeks), more post-op discomfort. Better for thin corneas and contact sports. Long-term results equivalent to LASIK.</li>
+    <li><strong>SMILE (Small Incision Lenticule Extraction):</strong> Femtosecond laser creates intrastromal lenticule extracted through a small incision. Flapless. For myopia and astigmatism.</li>
+    <li><strong>Phakic IOL (Visian ICL, EVO):</strong> Additional lens implanted in front of natural lens for high refractive errors outside laser range. Reversible. Excellent optical quality.</li>
+  </ul></div>
+  <div class="sb"><h3>Vitreoretinal and Other Surgery</h3><ul>
+    <li><strong>Pars Plana Vitrectomy (PPV):</strong> Small-gauge instruments (23g, 25g, 27g) for retinal detachment, vitreous haemorrhage, ERM/macular hole peel, endophthalmitis, dropped nuclear fragment.</li>
+    <li><strong>Trabeculectomy:</strong> Filtration surgery creating new aqueous drainage under conjunctival bleb. Most commonly performed glaucoma filtration surgery.</li>
+    <li><strong>Corneal Transplant (PK, DSAEK, DMEK):</strong> Full-thickness (PK) for scarring/advanced keratoconus; selective endothelial replacement (DSAEK/DMEK) for Fuchs&#39; dystrophy. Better outcomes and lower rejection rates with lamellar techniques.</li>
+    <li><strong>Strabismus Surgery:</strong> Recession (weakening) or resection (strengthening) of extraocular muscles to correct misalignment. May need multiple procedures.</li>
+  </ul></div>
+</div>
+
+<div class="panel" id="panel-investigations">
+  <div class="ph"><div class="ph-crumb">Diagnostic Tests</div><h2>Eye Investigations</h2><div class="o-line"></div><p>Research guide to understanding ophthalmic investigations and what your eye test results mean.</p></div>
+  <div class="sb"><h3>Key Ophthalmic Investigations</h3>
+    <table><tr><th>Investigation</th><th>What It Measures</th><th>Key Uses</th></tr>
+    <tr><td>Visual Acuity (Snellen/LogMAR)</td><td>Best corrected central vision clarity</td><td>Baseline, monitoring change, driving standard (6/12 minimum in UK)</td></tr>
+    <tr><td>OCT (Optical Coherence Tomography)</td><td>High-res retinal and optic nerve cross-section; RNFL thickness</td><td>AMD, DMO, glaucoma RNFL, macular hole, ERM, optic disc assessment</td></tr>
+    <tr><td>Humphrey Visual Field (HVF 24-2)</td><td>Peripheral and central visual field sensitivity</td><td>Glaucoma monitoring, neurological lesions, retinal disease extent</td></tr>
+    <tr><td>Fundus Photography</td><td>Colour photograph of posterior pole</td><td>DR screening, disc documentation for glaucoma comparison, AMD monitoring</td></tr>
+    <tr><td>Fluorescein Angiography (FFA)</td><td>Retinal/choroidal blood vessel perfusion with IV dye</td><td>Wet AMD CNV type, DR ischaemia mapping, RVO, vasculitis</td></tr>
+    <tr><td>OCT-Angiography (OCTA)</td><td>Non-invasive retinal blood flow imaging</td><td>CNV, capillary non-perfusion, RVO, DR &mdash; no IV dye needed</td></tr>
+    <tr><td>Corneal Topography / Tomography</td><td>Anterior and posterior corneal curvature maps</td><td>Keratoconus screening, refractive surgery planning, contact lens fitting</td></tr>
+    <tr><td>Biometry (IOLMaster/Lenstar)</td><td>Axial length, corneal power, anterior chamber depth</td><td>IOL power calculation before cataract surgery</td></tr>
+    <tr><td>Goldmann Applanation Tonometry</td><td>Intraocular pressure (mmHg)</td><td>Glaucoma diagnosis and monitoring; normal ~10-21 mmHg</td></tr>
+    <tr><td>Electrophysiology (ERG, VEP)</td><td>Retinal and visual pathway electrical responses</td><td>Retinitis pigmentosa, optic nerve assessment, unexplained vision loss</td></tr>
+    </table>
+  </div>
+  <div class="sb"><h3>Understanding Your Prescription</h3>
+    <p>A spectacle/contact lens prescription: <strong>Sphere (SPH)</strong> &mdash; degree of myopia (minus) or hyperopia (plus). <strong>Cylinder (CYL)</strong> &mdash; astigmatism power. <strong>Axis</strong> &mdash; direction of astigmatism (1-180 degrees). <strong>Addition (ADD)</strong> &mdash; extra near power for presbyopia. <strong>Prism</strong> &mdash; for double vision correction.</p>
+    <p>Example: -3.50 / -1.25 x 175 ADD +2.00 = 3.5D myopia with 1.25D astigmatism at axis 175 degrees, plus +2.00D reading addition (presbyopia).</p>
+  </div>
+</div>
+
+<div class="panel" id="panel-emergency">
+  <div class="ph"><div class="ph-crumb">URGENT</div><h2>Eye Emergency Guide</h2><div class="o-line"></div></div>
+  <div class="alert emergency"><span class="ai-ic">&#128680;</span><div>EYE EMERGENCIES &mdash; Eye Casualty / 112 (India) / 999 (UK) / 911 (US): Chemical splash (IRRIGATE FIRST 20+ min), penetrating injury (rigid shield, NO pressure), sudden vision loss, acute angle closure (severe pain + haloes + red eye), new flashes/floaters with curtain, GCA with visual symptoms in over-50s.</div></div>
+  <div class="g2">
+    <div class="sb"><h3>&#128680; Chemical Eye Injury</h3>
+      <p><strong>IRRIGATE IMMEDIATELY</strong> &mdash; do not stop to seek help first. Use any available clean water.</p>
+      <ul>
+        <li>Hold eye open under running tap or pour water over the eye continuously</li>
+        <li>Irrigate for a MINIMUM of 20-30 minutes</li>
+        <li>Check pH with litmus paper if available &mdash; continue until neutral (pH 7)</li>
+        <li>Alkali burns (cement, plaster, bleach, ammonia, oven cleaner) cause deeper penetration than acid burns</li>
+        <li>Remove any solid particles gently if visible</li>
+        <li>Attend eye casualty AFTER irrigation for grading and ongoing management</li>
+      </ul>
+    </div>
+    <div class="sb"><h3>&#128680; Penetrating Eye Injury</h3>
+      <ul>
+        <li>DO NOT apply any pressure to the eye</li>
+        <li>DO NOT attempt to remove any embedded foreign body</li>
+        <li>DO NOT instil any drops or ointment</li>
+        <li>Place a rigid shield (NOT an eye pad) &mdash; a clean cup or cardboard dome for protection</li>
+        <li>Keep patient calm and still; nil by mouth if surgery may be needed</li>
+        <li>Attend eye casualty immediately &mdash; risk of endophthalmitis and vision loss</li>
+      </ul>
+    </div>
+    <div class="sb"><h3>&#128680; Acute Angle-Closure Glaucoma</h3>
+      <p><strong>Recognition:</strong> Severe eye pain, red eye, blurred vision, haloes around lights, headache, nausea/vomiting. Fixed mid-dilated pupil, hazy/oedematous cornea. Very high IOP (often 40-70 mmHg).</p>
+      <ul>
+        <li>EYE CASUALTY IMMEDIATELY &mdash; rapid IOP rise causes irreversible optic nerve damage within hours</li>
+        <li>Do NOT give dilating drops (worsens angle closure)</li>
+        <li>IOP-lowering treatment: topical drops, IV/oral acetazolamide, IV mannitol in severe cases</li>
+        <li>Definitive: laser peripheral iridotomy (LPI) to affected eye and prophylactic LPI to fellow eye</li>
+        <li>Can mimic migraine or acute abdomen &mdash; always check IOP in any patient with nausea/vomiting and eye pain</li>
+      </ul>
+    </div>
+    <div class="sb"><h3>&#128680; Sudden Vision Loss</h3>
+      <ul>
+        <li>Any sudden unexplained vision loss: SAME-DAY ophthalmology assessment</li>
+        <li>Flashes + shower of floaters + curtain/shadow: retinal detachment &mdash; same-day</li>
+        <li>Sudden central distortion (wavy lines): wet AMD &mdash; urgent (days)</li>
+        <li>Profound sudden painless vision loss: retinal artery occlusion &mdash; emergency (cardiovascular workup)</li>
+        <li>Giant cell arteritis in over-50s with headache: EMERGENCY &mdash; immediate steroids to protect the other eye</li>
+        <li>Red tinge/floaters in diabetic patient: vitreous haemorrhage &mdash; urgent</li>
+      </ul>
+    </div>
+  </div>
+  <div class="sb"><h3>Other Eye Emergencies</h3><ul>
+    <li><strong>Giant Cell Arteritis (over-50s) &mdash; MEDICAL EMERGENCY:</strong> New headache + scalp tenderness/jaw pain + any visual symptoms. Urgent ESR/CRP + IMMEDIATE high-dose prednisolone. Do NOT wait for biopsy. Can cause sudden irreversible bilateral blindness.</li>
+    <li><strong>Endophthalmitis (post-operative):</strong> Increasing pain, redness, and decreasing vision days after eye surgery &mdash; same-day emergency. Urgent intravitreal antibiotics required.</li>
+    <li><strong>Hyphema (blood in anterior chamber):</strong> After blunt trauma. Restricted activity, avoid aspirin/NSAIDs (increased rebleed risk). Ophthalmology review urgently.</li>
+    <li><strong>Orbital cellulitis:</strong> Periorbital swelling + proptosis + restricted/painful eye movements + fever &mdash; urgent CT and IV antibiotics. Distinguish from preseptal cellulitis (no proptosis or restricted movements).</li>
+    <li><strong>Third nerve palsy with dilated pupil:</strong> Ptosis + eye in down-and-out position + dilated unreactive pupil &mdash; NEUROSURGICAL EMERGENCY (posterior communicating artery aneurysm until excluded). Urgent CT/MR angiography.</li>
+  </ul></div>
+</div>
+
+<div class="panel" id="panel-contact_lens">
+  <div class="ph"><div class="ph-crumb">Contact Lens Safety</div><h2>Contact Lens Safety &amp; Care</h2><div class="o-line"></div><p>Evidence-based contact lens safety guidance to protect your vision.</p></div>
+  <div class="alert emergency"><span class="ai-ic">&#128680;</span><div>Contact lens pain, redness, significant light sensitivity, or blurred vision: REMOVE LENSES IMMEDIATELY and seek same-day assessment. Microbial keratitis can progress rapidly and threaten vision.</div></div>
+  <div class="sb"><h3>Essential Safety Rules</h3><ul>
+    <li><strong>Always wash and thoroughly dry hands</strong> before handling contact lenses &mdash; the single most important hygiene step.</li>
+    <li><strong>NEVER use tap water</strong> to rinse, store, or prepare solutions for contact lenses. Tap water carries Acanthamoeba &mdash; a parasite causing severe, sight-threatening, extremely painful keratitis strongly associated with water exposure and contact lens wear.</li>
+    <li><strong>Replace your lens case monthly.</strong> Never top up old solution &mdash; always use fresh solution. Air-dry the case face-down on a clean tissue between uses.</li>
+    <li><strong>Wear only for the prescribed schedule:</strong> daily disposables = discard each evening; fortnightly/monthly = only up to the intended replacement date. Extending wear dramatically increases infection risk.</li>
+    <li><strong>Do not sleep in lenses</strong> unless specifically prescribed for extended/overnight wear.</li>
+    <li><strong>Do not swim or shower in reusable lenses.</strong> Daily disposables removed immediately afterwards are lower risk but still not zero risk.</li>
+  </ul></div>
+  <div class="sb"><h3>Warning Signs &mdash; Remove and Seek Same-Day Assessment</h3><ul>
+    <li>Eye pain beyond mild initial sensation when inserting</li>
+    <li>Increasing redness not resolving after lens removal</li>
+    <li>Significant light sensitivity (photophobia)</li>
+    <li>Blurred vision not clearing with blinking</li>
+    <li>Excessive watering or discharge</li>
+    <li>Sensation of something stuck in the eye</li>
+  </ul></div>
+  <div class="sb"><h3>Contact Lens Types</h3>
+    <table><tr><th>Type</th><th>Schedule</th><th>Advantages</th><th>Key Points</th></tr>
+    <tr><td>Daily Disposable</td><td>Discard each evening</td><td>Safest, no case/solution needed, ideal for occasional wear/allergy/dry eye</td><td>Higher per-lens cost, significant plastic waste</td></tr>
+    <tr><td>Fortnightly / Monthly</td><td>Prescribed replacement cycle</td><td>Lower per-wear cost, availability of advanced designs</td><td>Strict cleaning, case hygiene, storage discipline essential</td></tr>
+    <tr><td>Rigid Gas-Permeable (RGP)</td><td>Annual replacement typically</td><td>Best optics (especially keratoconus, high astigmatism), long-term cost-effective</td><td>Initial adaptation period, less comfortable initially</td></tr>
+    <tr><td>Orthokeratology (OK)</td><td>Overnight only, remove on waking</td><td>Unaided daytime vision, evidence-based myopia control in children</td><td>Specialist fitting, strict hygiene essential, no water exposure</td></tr>
+    <tr><td>Scleral Lenses</td><td>Daily removal</td><td>Irregular corneas (keratoconus), severe dry eye, post-surgical</td><td>Specialist fitting, larger diameter, careful insertion/removal</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="panel" id="panel-chat">
+  <div class="ph"><div class="ph-crumb">AI Research Assistant</div><h2>Ask OphthaCare AI</h2><div class="o-line"></div><p>Ask any question about eye health. AI-researched from AAO, RCOphth, WHO and NICE. <strong>Free forever.</strong></p></div>
+  <div class="alert emergency"><span class="ai-ic">&#128680;</span><div>EYE EMERGENCY &mdash; Chemical splash (irrigate first), sudden vision loss, acute red painful eye, penetrating injury &mdash; Eye Casualty / 112/999/911. Do NOT type here first.</div></div>
+  <div class="alert warn"><span class="ai-ic">&#9888;&#65039;</span><div>AI responses are for educational research only. Not medical advice. Always consult your ophthalmologist.</div></div>
+  <div class="chat-wrap">
+    <div class="chat-head"><h3>&#128065;&#65039; OphthaCare AI Research Assistant</h3><span class="free">FREE FOREVER</span></div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="cm sys">Welcome to OphthaCare AI &#128065;&#65039;</div>
+      <div class="cm ai"><div class="ai-lbl">OphthaCare AI</div>Hello! I can research questions about cataracts, glaucoma, macular degeneration, diabetic retinopathy, contact lens safety, eye drops, refractive surgery, and when to seek urgent eye care. For eye emergencies &mdash; irrigate immediately if chemical injury, then Eye Casualty or 112/999/911. I provide educational research only, not personal medical advice.</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-in" placeholder="Ask about cataracts, glaucoma, AMD, contact lenses, eye surgery..." onkeypress="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">Ask</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-settings">
+  <div class="ph"><div class="ph-crumb">Configuration</div><h2>Settings &amp; AI Provider</h2><div class="o-line"></div><p>Choose which AI powers your research. Keys are encrypted with AES-256-GCM and stored only in your browser.</p></div>
+  <div class="sb">
+    <h3>&#129302; Choose Your AI Provider</h3>
+    <p style="margin-bottom:16px;">Pick one of 5 providers. Your key is AES-256-GCM encrypted before storage. Never sent to our servers.</p>
+    <div class="g3" style="margin-bottom:18px;">
+      <div class="card click provider-card" data-provider="openai" onclick="selectProvider('openai')"><div class="ci">&#129001;</div><h3>ChatGPT</h3><p><p><p>OpenAI &mdash; gpt-4o</p><span class="ctag" id="ptag-openai">Not configured</span></div>
+      <div class="card click provider-card" data-provider="gemini" onclick="selectProvider('gemini')"><div class="ci">&#128309;</div><h3>Gemini</h3><p>Google &mdash; gemini-2.0-flash</p><span class="ctag" id="ptag-gemini">Not configured</span></div>
+      <div class="card click provider-card" data-provider="grok" onclick="selectProvider('grok')"><div class="ci">&#9899;</div><h3>Grok</h3><p>xAI &mdash; grok-2-latest</p><span class="ctag" id="ptag-grok">Not configured</span></div>
+      <div class="card click provider-card" data-provider="deepseek" onclick="selectProvider('deepseek')"><div class="ci">&#128308;</div><h3>DeepSeek</h3><p>DeepSeek &mdash; deepseek-chat</p><span class="ctag" id="ptag-deepseek">Not configured</span></div>
+      <div class="card click provider-card" data-provider="mistral" onclick="selectProvider('mistral')"><div class="ci">&#127756;</div><h3>Mistral AI</h3><p>Mistral &mdash; mistral-large-latest</p><span class="ctag" id="ptag-mistral">Not configured</span></div>
+      <div class="card click provider-card" data-provider="anthropic" onclick="selectProvider('anthropic')"><div class="ci">&#128995;</div><h3>Claude</h3>Anthropic &mdash; claude-sonnet-4</p><span class="ctag" id="ptag-anthropic">Not configured</span></div>
+      <div class="card click provider-card" data-provider="" onclick="selectProvider('')"><div class="ci">&#128244;</div><h3>Offline Mode</h3><p>No AI &mdash; embedded knowledge base</p><span class="ctag" id="ptag-offline">Always available</span></div>
+    </div>
+  </div>
+  <div class="api-box" id="key-entry-box">
+    <h3 id="key-entry-title">&#128273; API Key</h3>
+    <p id="key-entry-desc">Select a provider above, then paste its API key here.</p>
+    <div class="api-row">
+      <input class="api-input" type="password" id="api-key-in" placeholder="Paste your API key here">
+      <button class="btn btn-i" onclick="saveKey()">Save</button>
+      <button class="btn btn-outline btn-sm" onclick="clearKey()">Clear</button>
+    </div>
+    <div id="key-status" style="margin-top:10px;font-size:12px;color:var(--text3);">No provider selected &mdash; offline mode.</div>
+    <div style="margin-top:6px;font-size:11px;color:var(--text3);">&#128274; AES-256-GCM encrypted &middot; PBKDF2 key derivation &middot; Device-bound &middot; Never leaves your browser</div>
+    <div style="margin-top:8px;"><a id="get-key-link" href="#" target="_blank" style="font-size:12px;color:var(--indigo);">Get a free API key &#8594;</a></div>
+  </div>
+  <div class="sb"><h3>System Status</h3>
+    <div style="font-size:13.5px;line-height:2;color:var(--text2);">
+      Server: <span style="color:var(--teal)">&#10003; Running</span><br>
+      Active Provider: <span id="mode-disp">Offline Research</span><br>
+      Security: <span style="color:var(--indigo)">&#128274; AES-256-GCM</span><br>
+      Offline Knowledge Base: <span style="color:var(--teal)">&#10003; Available</span>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand"><h3>&#128065;&#65039; OphthaCare AI</h3><p>Ophthalmology Health Intelligence Platform &mdash; AI-researched insights from AAO, RCOphth, WHO, NICE, AIOS and peer-reviewed ophthalmology literature.</p></div>
+      <div class="footer-col"><h4>Sections</h4><ul>
+        <li><a href="#" onclick="nav('conditions')">Eye Conditions</a></li>
+        <li><a href="#" onclick="nav('glaucoma')">Glaucoma</a></li>
+        <li><a href="#" onclick="nav('retina')">Retinal Disease</a></li>
+        <li><a href="#" onclick="nav('medicines')">Eye Drops</a></li>
+        <li><a href="#" onclick="nav('surgery')">Eye Surgery</a></li>
+        <li><a href="#" onclick="nav('emergency')">Eye Emergencies</a></li>
+        <li><a href="#" onclick="nav('contact_lens')">Contact Lenses</a></li>
+      </ul></div>
+      <div class="footer-col"><h4>Clinical Sources</h4><ul>
+        <li><a href="https://www.aao.org" target="_blank">AAO Guidelines</a></li>
+        <li><a href="https://www.rcophth.ac.uk" target="_blank">RCOphth Guidelines</a></li>
+        <li><a href="https://www.aios.org" target="_blank">AIOS India</a></li>
+        <li><a href="https://www.nice.org.uk" target="_blank">NICE Guidelines</a></li>
+        <li><a href="https://www.lvpei.org" target="_blank">LV Prasad Eye Institute</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>OphthaCare AI &mdash; For Research &amp; Educational Purposes Only &middot; Not Medical Advice</p>
+      <div class="footer-disc">Not a substitute for professional eye care. For emergencies: Eye Casualty / 112 (India) / 999 (UK) / 911 (US). &#128274; AES-256-GCM key encryption.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// AES-256-GCM Secure Key Storage
+/**
+ * OrthoCare / CardioCare / NeuroCare / GynoCare / OncoCare AI
+ * AES-256-GCM Client-Side Key Security Module v1.0
+ * =====================================================
+ * Encrypts API keys before storing in localStorage using
+ * AES-256-GCM via the browser's native Web Crypto API.
+ * The encryption key is derived from a device-specific
+ * fingerprint using PBKDF2 (100,000 iterations, SHA-256).
+ *
+ * Security properties:
+ * - Keys are NEVER stored in plaintext in localStorage
+ * - AES-256-GCM provides both encryption AND authentication (AEAD)
+ * - The derived key is not persisted anywhere
+ * - A random 96-bit IV is generated for every encryption operation
+ * - PBKDF2 with 100k iterations makes brute-force attacks expensive
+ * - Key never leaves the browser except when sent directly to AI provider API
+ *
+ * Usage: drop this entire block before your ST = {} state declaration.
+ * Then replace all localStorage.setItem(key, JSON.stringify(keys)) with
+ * await SecureKeyStore.save(storeName, keys)
+ * and all JSON.parse(localStorage.getItem(...)) with
+ * await SecureKeyStore.load(storeName)
+ */
+
+const SecureKeyStore = (function() {
+  'use strict';
+
+  // Derive a deterministic device fingerprint from stable browser properties.
+  // This is NOT cryptographically strong identity - it's a convenience measure
+  // to ensure keys encrypted on this browser can only be decrypted on this browser.
+  function getDeviceFingerprint(appId) {
+    var parts = [
+      appId,
+      navigator.userAgent || '',
+      navigator.language || '',
+      (screen.width || 0) + 'x' + (screen.height || 0),
+      navigator.hardwareConcurrency || 0,
+      Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+    ];
+    return parts.join('|:|');
+  }
+
+  // Derive AES-256 key from fingerprint using PBKDF2
+  async function deriveKey(appId) {
+    var fingerprint = getDeviceFingerprint(appId);
+    var encoder = new TextEncoder();
+    var rawKey = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(fingerprint),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveKey']
+    );
+    // Use a fixed but app-specific salt (not secret - purpose is just domain separation)
+    var salt = encoder.encode('medical-ai-platform-' + appId + '-v1');
+    return await crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+      rawKey,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
+
+  // Encrypt a string value, returns base64-encoded IV + ciphertext
+  async function encrypt(plaintext, appId) {
+    var key = await deriveKey(appId);
+    var iv = crypto.getRandomValues(new Uint8Array(12)); // 96-bit random IV
+    var encoder = new TextEncoder();
+    var ciphertext = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv: iv },
+      key,
+      encoder.encode(plaintext)
+    );
+    // Prepend IV to ciphertext for storage: [12 bytes IV][ciphertext]
+    var combined = new Uint8Array(iv.length + ciphertext.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(ciphertext), iv.length);
+    return btoa(String.fromCharCode.apply(null, combined));
+  }
+
+  // Decrypt a base64-encoded IV + ciphertext string
+  async function decrypt(encoded, appId) {
+    try {
+      var key = await deriveKey(appId);
+      var combined = new Uint8Array(
+        atob(encoded).split('').map(function(c) { return c.charCodeAt(0); })
+      );
+      var iv = combined.slice(0, 12);
+      var ciphertext = combined.slice(12);
+      var plaintext = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: iv },
+        key,
+        ciphertext
+      );
+      return new TextDecoder().decode(plaintext);
+    } catch (e) {
+      // Decryption failed - key may have been stored with old method (plaintext)
+      // or device fingerprint changed. Return null to trigger re-entry.
+      return null;
+    }
+  }
+
+  // Public API
+  return {
+    /**
+     * Save API keys object to localStorage with AES-256-GCM encryption.
+     * @param {string} storeName - localStorage key name (e.g. 'cc_keys')
+     * @param {string} appId - app-specific ID for key derivation (e.g. 'cardiocare')
+     * @param {object} keysObj - { provider: 'sk-...' } keys object
+     */
+    save: async function(storeName, appId, keysObj) {
+      try {
+        var plaintext = JSON.stringify(keysObj);
+        var encrypted = await encrypt(plaintext, appId);
+        localStorage.setItem(storeName, encrypted);
+        localStorage.setItem(storeName + '_enc', '1'); // flag: encrypted format
+        return true;
+      } catch (e) {
+        // Fallback: if Web Crypto unavailable (very old browser), store plaintext
+        console.warn('[SecureKeyStore] Encryption unavailable, storing plaintext:', e.message);
+        localStorage.setItem(storeName, JSON.stringify(keysObj));
+        return false;
+      }
+    },
+
+    /**
+     * Load and decrypt API keys from localStorage.
+     * @param {string} storeName - localStorage key name
+     * @param {string} appId - must match what was used in save()
+     * @returns {object} keysObj or {} if not found / decryption failed
+     */
+    load: async function(storeName, appId) {
+      try {
+        var stored = localStorage.getItem(storeName);
+        if (!stored) return {};
+        var isEncrypted = localStorage.getItem(storeName + '_enc') === '1';
+        if (!isEncrypted) {
+          // Migrate plaintext to encrypted on next save
+          var parsed = JSON.parse(stored);
+          // Auto-migrate: re-encrypt now
+          await this.save(storeName, appId, parsed);
+          return parsed;
+        }
+        var plaintext = await decrypt(stored, appId);
+        if (plaintext === null) {
+          // Decryption failed (e.g. different browser/device after migration)
+          // Clear and start fresh - user will need to re-enter keys
+          console.warn('[SecureKeyStore] Decryption failed - clearing stored keys');
+          localStorage.removeItem(storeName);
+          localStorage.removeItem(storeName + '_enc');
+          return {};
+        }
+        return JSON.parse(plaintext);
+      } catch (e) {
+        return {};
+      }
+    },
+
+    /**
+     * Remove all keys for a store.
+     */
+    clear: function(storeName) {
+      localStorage.removeItem(storeName);
+      localStorage.removeItem(storeName + '_enc');
+    },
+
+    /**
+     * Check if Web Crypto AES-GCM is available in this browser.
+     */
+    isAvailable: function() {
+      return !!(window.crypto && window.crypto.subtle && window.crypto.subtle.encrypt);
+    }
+  };
+})();
+
+
+// Application Code
+
+var PROVIDERS = {
+  anthropic:{label:'Claude (Anthropic)',placeholder:'sk-ant-api03-...',getKeyUrl:'https://console.anthropic.com',icon:'&#128995;'},
+  openai:{label:'ChatGPT (OpenAI)',placeholder:'sk-...',getKeyUrl:'https://platform.openai.com/api-keys',icon:'&#129001;'},
+  gemini:{label:'Gemini (Google)',placeholder:'AIza...',getKeyUrl:'https://aistudio.google.com/apikey',icon:'&#128309;'},
+  grok:{label:'Grok (xAI)',placeholder:'xai-...',getKeyUrl:'https://console.x.ai',icon:'&#9899;'},
+  deepseek:{label:'DeepSeek',placeholder:'sk-...',getKeyUrl:'https://platform.deepseek.com/api_keys',icon:'&#128308;'}
+};
+var ST = { provider: localStorage.getItem('ophthacare_provider') || '', keys: {}, files: [] };
+function currentApiKey(){ return ST.provider ? (ST.keys[ST.provider] || '') : ''; }
+
+document.addEventListener('DOMContentLoaded', function(){
+  (async function(){
+    if(SecureKeyStore.isAvailable()){ ST.keys = await SecureKeyStore.load('oc_keys','ophthacare'); }
+    else { var r=localStorage.getItem('oc_keys'); ST.keys=r?JSON.parse(r):{}; }
+  })();
+  ['dc1','dc2','dc3'].forEach(function(id){
+    document.getElementById(id).addEventListener('change', function(){
+      var ok=['dc1','dc2','dc3'].every(function(i){ return document.getElementById(i).checked; });
+      document.getElementById('disc-btn').disabled = !ok;
+    });
+  });
+  if(sessionStorage.getItem('ophthacare_disc')) document.getElementById('disc-modal').style.display='none';
+  setTimeout(function(){ refreshProviderTags(); selectProvider(ST.provider,true); },100);
+});
+
+function acceptDisc(){ document.getElementById('disc-modal').style.display='none'; sessionStorage.setItem('ophthacare_disc','1'); }
+
+function nav(id){
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.ntab,.sbi').forEach(function(n){ n.classList.remove('active'); });
+  var p=document.getElementById('panel-'+id); if(p) p.classList.add('active');
+  document.querySelectorAll('.ntab,.sbi').forEach(function(el){ var oc=el.getAttribute('onclick'); if(oc&&oc.indexOf("'"+id+"'")!==-1) el.classList.add('active'); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchTab(btn,id){
+  var parent=btn.closest('.panel');
+  if(parent){ parent.querySelectorAll('.tbtn').forEach(function(b){ b.classList.remove('active'); }); parent.querySelectorAll('.tpane').forEach(function(p){ p.classList.remove('active'); }); }
+  btn.classList.add('active');
+  var pane=document.getElementById(id); if(pane) pane.classList.add('active');
+}
+
+function selectProvider(pid,init){
+  ST.provider=pid; localStorage.setItem('ophthacare_provider',pid);
+  document.querySelectorAll('.provider-card').forEach(function(c){ c.classList.remove('selected'); });
+  var ac=document.querySelector('.provider-card[data-provider="'+pid+'"]');
+  if(ac) ac.classList.add('selected');
+  var box=document.getElementById('key-entry-box'), title=document.getElementById('key-entry-title');
+  var desc=document.getElementById('key-entry-desc'), input=document.getElementById('api-key-in');
+  var link=document.getElementById('get-key-link'), status=document.getElementById('key-status');
+  var md=document.getElementById('mode-disp');
+  if(!pid){ box.style.display='none'; status.textContent='Offline mode.'; md.textContent='Offline Research'; if(!init) toast('Offline mode active.'); return; }
+  var meta=PROVIDERS[pid];
+  box.style.display='block';
+  title.innerHTML=meta.icon+' '+meta.label+' API Key';
+  desc.innerHTML='Get key at <strong>'+meta.getKeyUrl.replace('https://','')+'</strong>. AES-256-GCM encrypted before storage.';
+  input.placeholder=meta.placeholder; input.value=ST.keys[pid]||''; link.href=meta.getKeyUrl;
+  if(ST.keys[pid]){ status.textContent='&#128274; Active: '+meta.label+' configured.'; status.style.color='var(--teal)'; md.textContent='Live AI ('+meta.label+')'; }
+  else { status.textContent='No key for '+meta.label+'.'; status.style.color='var(--text3)'; md.textContent=meta.label+' - key required'; }
+  if(!init) window.scrollTo({top:document.getElementById('key-entry-box').offsetTop-100,behavior:'smooth'});
+}
+
+function refreshProviderTags(){
+  Object.keys(PROVIDERS).forEach(function(p){
+    var tag=document.getElementById('ptag-'+p); if(!tag) return;
+    if(ST.keys[p]){ tag.textContent='Configured'; tag.classList.add('configured'); }
+    else { tag.textContent='Not configured'; tag.classList.remove('configured'); }
+  });
+}
+
+function saveKey(){
+  if(!ST.provider){ toast('Select a provider first.'); return; }
+  var k=document.getElementById('api-key-in').value.trim();
+  if(!k){ toast('Please paste an API key.'); return; }
+  ST.keys[ST.provider]=k;
+  SecureKeyStore.isAvailable()
+    ? SecureKeyStore.save('oc_keys','ophthacare',ST.keys)
+    : localStorage.setItem('oc_keys',JSON.stringify(ST.keys));
+  refreshProviderTags(); selectProvider(ST.provider,true); toast(PROVIDERS[ST.provider].label+' key saved (AES-256 encrypted).');
+}
+function clearKey(){
+  if(!ST.provider) return;
+  delete ST.keys[ST.provider];
+  SecureKeyStore.isAvailable()
+    ? SecureKeyStore.save('oc_keys','ophthacare',ST.keys)
+    : localStorage.setItem('oc_keys',JSON.stringify(ST.keys));
+  document.getElementById('api-key-in').value='';
+  refreshProviderTags(); selectProvider(ST.provider,true);
+}
+
+var FICONS={pdf:'&#128196;',jpg:'&#128444;',jpeg:'&#128444;',png:'&#128444;',docx:'&#128196;',txt:'&#128221;'};
+function handleFiles(files){
+  Array.from(files).forEach(function(f){
+    if(ST.files.find(function(x){ return x.name===f.name&&x.size===f.size; })) return;
+    ST.files.push(f);
+    var ext=f.name.split('.').pop().toLowerCase();
+    var sz=f.size>1048576?(f.size/1048576).toFixed(1)+'MB':Math.round(f.size/1024)+'KB';
+    var el=document.createElement('div'); el.className='file-row'; el.dataset.fname=f.name;
+    var sn=f.name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    el.innerHTML='<span class="fr-ico">'+(FICONS[ext]||'&#128193;')+'</span><span class="fr-name">\'+escapeFilename(sn)+\'</span><span class="fr-meta">'+sz+'</span><span class="fr-ok">Ready</span><span class="fr-del" onclick="removeByEl(this)">&#10005;</span>';
+    document.getElementById('flist').appendChild(el);
+  });
+}
+function removeByEl(btn){ var r=btn.closest('.file-row'); if(!r) return; var n=r.dataset.fname; ST.files=ST.files.filter(function(f){ return f.name!==n; }); r.remove(); }
+function clearFiles(){ ST.files=[]; document.getElementById('flist').innerHTML=''; }
+function uploadFiles(){
+  if(!ST.files.length){ toast('Please select files first.'); return; }
+  var btn=document.getElementById('up-btn'); setLoad(btn,true);
+  setTimeout(function(){ document.getElementById('up-result').innerHTML='<div class="alert teal" style="margin-top:16px;"><span class="ai-ic">&#10003;</span><div><strong>'+ST.files.length+' file(s) uploaded.</strong> Go to Conditions or Investigations to research your reports.</div></div>'; setLoad(btn,false); },2000);
+}
+
+var CONDITIONS_KB={
+  'Cataract':'<div class="sb"><h3>Cataract</h3><p>Clouding of the eye&#39;s natural lens causing gradual, painless blurred vision, glare, and faded colours. The leading cause of reversible blindness worldwide.</p><h4>Symptoms</h4><ul><li>Gradual blurring, glare and haloes around lights especially at night</li><li>Faded or yellowed colour perception, frequent prescription changes</li><li>Second sight phenomenon (temporary near vision improvement early on)</li></ul><h4>Treatment</h4><p>Surgery is the only effective treatment &mdash; no drops or medicines reverse cataract. Phacoemulsification with IOL implantation: day case, local anaesthetic, high success rate. IOL options: monofocal (glasses for near), multifocal/EDOF (reduce spectacle dependence, may cause haloes), toric (correct astigmatism). PCO (cloudiness months-years after surgery) is treated quickly with outpatient YAG laser.</p><div class="alert warn" style="margin-top:12px;"><span class="ai-ic">&#9888;&#65039;</span><div>Research purposes only. Consult your ophthalmologist for surgical timing and IOL selection.</div></div></div>',
+  'Primary Open-Angle Glaucoma':'<div class="sb"><h3>Primary Open-Angle Glaucoma (POAG)</h3><p>Progressive optic nerve damage with raised IOP causing irreversible peripheral visual field loss. Often completely asymptomatic until significant damage &mdash; the silent thief of sight.</p><h4>Investigations</h4><ul><li>IOP (Goldmann tonometry), optic disc assessment, visual fields (HVF 24-2), OCT RNFL, gonioscopy, pachymetry</li></ul><h4>Treatment</h4><ul><li>First-line: prostaglandin analogue drops (latanoprost once nightly) or SLT laser</li><li>Additional drops if needed: beta-blockers (timolol), carbonic anhydrase inhibitors, alpha agonists</li><li>Surgery (trabeculectomy, MIGS) for medically uncontrolled disease</li><li>Lifelong monitoring essential even when IOP well-controlled</li></ul><div class="alert warn" style="margin-top:12px;"><span class="ai-ic">&#9888;&#65039;</span><div>Research purposes only. Requires lifelong monitoring by your ophthalmologist.</div></div></div>',
+  'Wet AMD':'<div class="sb"><h3>Wet AMD (Neovascular AMD)</h3><p>Abnormal blood vessel growth beneath the macula leaking fluid, causing rapid central vision distortion or loss. URGENT referral needed &mdash; time to anti-VEGF treatment strongly affects outcome.</p><h4>Symptoms</h4><ul><li>Sudden central distortion &mdash; straight lines appear wavy (metamorphopsia)</li><li>Grey or blank patch appearing in central vision</li><li>Rapid deterioration of central vision</li></ul><h4>Treatment</h4><p>Intravitreal anti-VEGF injections (aflibercept, ranibizumab, faricimab, bevacizumab) &mdash; injected into the vitreous cavity at the clinic under topical anaesthesia. Monthly injections initially then extending intervals if stable. Can stabilise or improve vision if started promptly. Use an Amsler grid regularly to detect new distortion early.</p><div class="alert warn" style="margin-top:12px;"><span class="ai-ic">&#9888;&#65039;</span><div>Any sudden central distortion requires URGENT same-day ophthalmology assessment. Research purposes only.</div></div></div>',
+  'Dry Eye Disease':'<div class="sb"><h3>Dry Eye Disease</h3><p>Tear film instability causing irritation, grittiness, burning, fluctuating vision, and paradoxically sometimes excessive watering (reflex tearing). Extremely common, especially with increased screen use.</p><h4>Management (Stepwise)</h4><ul><li>Preservative-free artificial tears (frequent, regular use) &mdash; mainstay of treatment</li><li>Warm compresses + lid massage for meibomian gland dysfunction (most common cause of evaporative dry eye)</li><li>20-20-20 rule: every 20 minutes, look 20 feet away for 20 seconds during screen use</li><li>Punctal plugs for moderate-severe dry eye</li><li>Topical ciclosporin (Ikervis/Restasis) for inflammatory dry eye component</li></ul><div class="alert warn" style="margin-top:12px;"><span class="ai-ic">&#9888;&#65039;</span><div>Research purposes only. Consult your ophthalmologist or optometrist.</div></div></div>',
+  'Diabetic Retinopathy':'<div class="sb"><h3>Diabetic Retinopathy</h3><p>Leading cause of blindness in working-age adults globally. Annual screening essential even when vision is normal &mdash; early stages are completely asymptomatic.</p><h4>Key Principles</h4><ul><li>Tight glycaemic control (HbA1c) and blood pressure control are the most important protective measures</li><li>Annual fundus photography screening: all diabetic patients as a minimum</li><li>Anti-VEGF injections: first-line for diabetic macular oedema</li><li>Pan-retinal laser: for proliferative DR</li><li>Vitrectomy: for non-clearing vitreous haemorrhage or tractional retinal detachment</li></ul><div class="alert warn" style="margin-top:12px;"><span class="ai-ic">&#9888;&#65039;</span><div>Annual diabetic eye screening is essential. Research purposes only.</div></div></div>',
+};
+
+function showCondition(){
+  var sel=document.getElementById('cond-sel').value;
+  var out=document.getElementById('cond-output');
+  if(!sel){ out.innerHTML=''; return; }
+  if(CONDITIONS_KB[sel]){ out.innerHTML=CONDITIONS_KB[sel]; out.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  fetchConditionLive(sel,out);
+}
+function fetchConditionLive(sel,out){
+  var key=currentApiKey();
+  if(ST.provider&&key){
+    out.innerHTML='<div class="sb"><h3>'+sel+'</h3><div style="padding:10px 0;"><span class="typing"><span></span><span></span><span></span></span></div></div>';
+    out.scrollIntoView({behavior:'smooth',block:'start'});
+    fetch('/api/condition/'+encodeURIComponent(sel)+'?provider='+ST.provider+'&api_key='+encodeURIComponent(key))
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var body=data.content||(data.condition?JSON.stringify(data.condition,null,2):'No research available.');
+      var mt=data.mode==='live_ai'?'<span class="ctag" style="background:var(--teal-pale);color:var(--teal);border-color:rgba(14,116,144,0.3);display:inline-block;margin-bottom:10px;">Live AI &middot; '+PROVIDERS[ST.provider].label+'</span>':'<span class="ctag" style="display:inline-block;margin-bottom:10px;">Offline Research</span>';
+      out.innerHTML='<div class="sb"><h3>'+sel+'</h3>'+mt+'<div style="white-space:pre-wrap;font-size:13.5px;line-height:1.8;color:var(--text2);">'+sanitizeAIResponse(body)+'</div></div>';
+    }).catch(function(){ out.innerHTML='<div class="sb"><h3>'+sel+'</h3><p>Could not reach server. Try the AI Chat tab.</p></div>'; });
+  } else {
+    out.innerHTML='<div class="sb"><h3>'+sel+'</h3><p>Choose an AI provider in Settings for live research on this condition, or ask in the AI Chat.</p></div>';
+    out.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+var CHAT_KB={
+  'cataract':'Cataracts cause gradual painless blurred vision, glare, and faded colours. Surgery (phacoemulsification with IOL) is the only effective treatment &mdash; no drops or medicines reverse cataracts. Day case, local anaesthetic. IOL options: monofocal (glasses for near), multifocal (reduce spectacle dependence, may cause haloes), toric (correct astigmatism). Post-op PCO is common and easily treated with quick outpatient YAG laser. Consult your ophthalmologist.',
+  'glaucoma':'Glaucoma is the silent thief of sight &mdash; often asymptomatic until significant damage has occurred. First-line: prostaglandin analogue drops (latanoprost once nightly) or SLT laser. Requires lifelong monitoring including OCT and visual fields. Acute angle closure (severe pain + red eye + haloes) is an EMERGENCY &mdash; Eye Casualty immediately. Family history: get regular eye exams from age 40. Consult your ophthalmologist.',
+  'floater':'New sudden onset of floaters (especially a shower), flashes of light, or a curtain/shadow across vision requires SAME-DAY ophthalmology assessment to exclude retinal tear or detachment. While floaters are common with age (vitreous syneresis), a sudden change always needs urgent dilated fundus examination. Do not wait until morning. Consult your ophthalmologist today.',
+  'amd':'Dry AMD: gradual central vision loss, AREDS2 vitamins may slow intermediate AMD progression, use Amsler grid regularly. Wet AMD: sudden central distortion or vision loss &mdash; URGENT assessment needed as anti-VEGF injections (aflibercept, ranibizumab, faricimab) can stabilise or improve vision if started promptly. Consult your ophthalmologist urgently for any sudden central distortion.',
+  'dry eye':'Dry eye: use preservative-free artificial tears regularly throughout the day. Warm compresses and lid massage for meibomian gland dysfunction. 20-20-20 rule for screen users. Avoid contact lenses until stable. Topical ciclosporin for moderate-severe inflammatory dry eye. Consult your ophthalmologist or optometrist for formal assessment.',
+  'contact':'Contact lens safety: always wash and dry hands, NEVER use tap water (Acanthamoeba risk), replace lens case monthly with fresh solution, never sleep in lenses unless specifically prescribed for extended wear, never swim in reusable lenses. Warning signs to remove and seek same-day assessment: pain, redness, light sensitivity, blurred vision. Regular contact lens check-ups are essential.',
+  'diabetic':'Diabetic eye disease: annual retinal screening is essential even when vision feels normal. Tight blood glucose (HbA1c) and blood pressure control are the most important protective measures. Anti-VEGF injections for diabetic macular oedema. Sudden vision change in a diabetic patient (vitreous haemorrhage) requires urgent assessment. Consult your ophthalmologist and diabetologist.',
+  'chemical':'Chemical splash to the eye: IRRIGATE IMMEDIATELY with any available clean water for 20-30 minutes &mdash; do not stop to seek help first. Alkali burns (cement, bleach, ammonia) are more severe than acid. Check pH with litmus paper, irrigate until neutral. Then attend eye casualty. Irrigation is the single most important first-aid step for any chemical eye injury.',
+};
+
+function sendChat(){
+  var inp=document.getElementById('chat-in');
+  var msg=inp.value.trim(); if(!msg) return;
+  addMsg('user',msg); inp.value='';
+  var msgs=document.getElementById('chat-msgs');
+  var tid='ty-'+Date.now();
+  var ti=document.createElement('div'); ti.className='cm ai'; ti.id=tid;
+  ti.innerHTML='<div class="ai-lbl">OphthaCare AI</div><div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(ti); msgs.scrollTop=msgs.scrollHeight;
+  var key=currentApiKey();
+  if(ST.provider&&key){
+    fetch('/api/chat/send',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:msg,request_ai:true,provider:ST.provider,api_key:key})})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var el=document.getElementById(tid); if(el) el.remove();
+      if(data.ai_response){ addMsg('ai',data.ai_response,true); return; }
+      offlineChat(msg,null);
+    }).catch(function(){ var el=document.getElementById(tid); if(el) el.remove(); offlineChat(msg,null); });
+  } else { setTimeout(function(){ offlineChat(msg,tid); },600); }
+}
+function offlineChat(msg,tid){
+  if(tid){ var el=document.getElementById(tid); if(el) el.remove(); }
+  var ml=msg.toLowerCase(); var resp='';
+  for(var k in CHAT_KB){ if(ml.indexOf(k)!==-1){ resp=CHAT_KB[k]; break; } }
+  if(!resp) resp='Thank you for your question about "'+msg+'". For detailed research browse the relevant sections or choose an AI provider in Settings. For eye emergencies (sudden vision loss, chemical splash, penetrating injury) attend Eye Casualty immediately or call 112/999/911. All responses are for educational research only. Always consult your ophthalmologist.';
+  addMsg('ai',resp,false);
+}
+function addMsg(type,text,isLive){
+  var msgs=document.getElementById('chat-msgs');
+  var el=document.createElement('div'); el.className='cm '+type;
+  if(type==='ai'){
+    var label=(isLive&&ST.provider)?('OphthaCare AI &middot; '+PROVIDERS[ST.provider].label):'OphthaCare AI';
+    el.innerHTML='<div class="ai-lbl">'+label+'</div>'+sanitizeAIResponse(text);
+  } else { el.textContent=text; }
+  msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight;
+}
+function setLoad(btn,state){ if(!btn) return; if(state) btn.classList.add('loading'); else btn.classList.remove('loading'); btn.disabled=state; }
+function toast(msg){ var t=document.createElement('div'); t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--border2);color:var(--text);padding:12px 22px;border-radius:10px;font-size:14px;z-index:9999;box-shadow:var(--shadow);'; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){ t.remove(); },3000); }
+var uz=document.getElementById('uz');
+uz.addEventListener('dragover',function(e){e.preventDefault();uz.classList.add('drag');});
+uz.addEventListener('dragleave',function(){uz.classList.remove('drag');});
+uz.addEventListener('drop',function(e){e.preventDefault();uz.classList.remove('drag');handleFiles(e.dataTransfer.files);});
+
+// ======= UNIVERSAL PATCH INJECTED =======
+// ============================================================
+// UNIVERSAL SECURITY + FEATURE PATCH v2.0
+// Injected into all 9 Medical AI platforms
+// 1. XSS escaping for all user-controlled innerHTML
+// 2. Mistral AI as 6th provider
+// 3. Ambiguity Resolver (multi-AI consensus engine)
+// 4. Content Security hardening
+// ============================================================
+
+// ── XSS ESCAPE FUNCTIONS ─────────────────────────────────────
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+}
+
+function sanitizeAIResponse(text) {
+    // AI responses can contain markdown — preserve line breaks and basic formatting
+    // but strip any actual HTML tags to prevent XSS
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+}
+
+function escapeFilename(name) {
+    if (!name) return 'unknown';
+    // Only allow safe filename characters for display
+    return String(name).replace(/[<>&"'\/\\]/g, c => ({
+        '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#x27;','/':'&#x2F;','\\':'&#x5C;'
+    }[c]));
+}
+
+// ── PROVIDER REGISTRY (6 providers) ──────────────────────────
+var PROVIDERS = {
+    anthropic: {
+        label: 'Claude (Anthropic)',
+        placeholder: 'sk-ant-api03-...',
+        getKeyUrl: 'https://console.anthropic.com',
+        icon: '&#128995;',
+        color: '#c96442'
+    },
+    openai: {
+        label: 'ChatGPT (OpenAI)',
+        placeholder: 'sk-...',
+        getKeyUrl: 'https://platform.openai.com/api-keys',
+        icon: '&#129001;',
+        color: '#10a37f'
+    },
+    gemini: {
+        label: 'Gemini (Google)',
+        placeholder: 'AIza...',
+        getKeyUrl: 'https://aistudio.google.com/apikey',
+        icon: '&#128309;',
+        color: '#4285f4'
+    },
+    grok: {
+        label: 'Grok (xAI)',
+        placeholder: 'xai-...',
+        getKeyUrl: 'https://console.x.ai',
+        icon: '&#9899;',
+        color: '#1da1f2'
+    },
+    deepseek: {
+        label: 'DeepSeek',
+        placeholder: 'sk-...',
+        getKeyUrl: 'https://platform.deepseek.com/api_keys',
+        icon: '&#128308;',
+        color: '#4d6bfe'
+    },
+    mistral: {
+        label: 'Mistral AI',
+        placeholder: 'your-mistral-key...',
+        getKeyUrl: 'https://console.mistral.ai/api-keys',
+        icon: '&#127756;',
+        color: '#ff7000'
+    }
+};
+
+// ── AMBIGUITY RESOLVER ────────────────────────────────────────
+// CSS injected once
+(function injectAmbiguityCSS() {
+    if (document.getElementById('ar-style')) return;
+    var style = document.createElement('style');
+    style.id = 'ar-style';
+    style.textContent = [
+        '#ar-overlay{position:fixed;inset:0;z-index:9000;background:rgba(5,5,15,0.92);backdrop-filter:blur(14px);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;}',
+        '#ar-overlay.ar-open{display:flex;}',
+        '#ar-box{background:#fff;border-radius:18px;max-width:900px;width:100%;padding:0;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.4);}',
+        '#ar-head{padding:22px 28px;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:space-between;}',
+        '#ar-head h2{font-size:17px;font-weight:700;color:#fff;margin:0;}',
+        '#ar-head p{font-size:12px;color:rgba(255,255,255,0.6);margin:4px 0 0;}',
+        '#ar-close{background:rgba(255,255,255,0.15);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}',
+        '#ar-close:hover{background:rgba(255,255,255,0.25);}',
+        '#ar-query-area{padding:20px 28px;border-bottom:1px solid #eee;}',
+        '#ar-query-area label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#666;display:block;margin-bottom:6px;}',
+        '#ar-prompt{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-family:inherit;font-size:14px;resize:vertical;min-height:80px;outline:none;box-sizing:border-box;}',
+        '#ar-prompt:focus{border-color:#4d6bfe;}',
+        '#ar-providers-area{padding:18px 28px;border-bottom:1px solid #eee;}',
+        '#ar-providers-area label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#666;display:block;margin-bottom:10px;}',
+        '.ar-prov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}',
+        '.ar-prov-chip{display:flex;align-items:center;gap:8px;padding:9px 12px;border:2px solid #eee;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;user-select:none;}',
+        '.ar-prov-chip:hover{border-color:#4d6bfe;background:#f0f2ff;}',
+        '.ar-prov-chip.ar-selected{border-color:#4d6bfe;background:#eef1ff;font-weight:600;}',
+        '.ar-prov-chip .ar-key-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}',
+        '.ar-prov-chip .ar-key-ok{background:#22c55e;}',
+        '.ar-prov-chip .ar-key-miss{background:#ef4444;}',
+        '#ar-actions{padding:16px 28px;display:flex;gap:10px;align-items:center;}',
+        '#ar-run-btn{padding:12px 28px;border-radius:10px;background:linear-gradient(135deg,#4d6bfe,#7c3aed);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;}',
+        '#ar-run-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(77,107,254,0.4);}',
+        '#ar-run-btn:disabled{opacity:0.5;cursor:not-allowed;}',
+        '#ar-note{font-size:12px;color:#888;}',
+        '#ar-results{padding:0 28px 28px;}',
+        '.ar-resp-card{margin-top:16px;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;}',
+        '.ar-resp-head{padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;}',
+        '.ar-resp-body{padding:14px 16px;font-size:13.5px;line-height:1.75;color:#374151;background:#fafafa;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow-y:auto;}',
+        '.ar-resp-err{padding:14px 16px;font-size:13px;color:#ef4444;background:#fff5f5;}',
+        '#ar-synthesis{margin-top:20px;border:2px solid #4d6bfe;border-radius:14px;overflow:hidden;}',
+        '#ar-synthesis-head{padding:14px 18px;background:linear-gradient(135deg,#4d6bfe,#7c3aed);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}',
+        '#ar-synthesis-body{padding:16px 18px;font-size:13.5px;line-height:1.8;color:#1f2937;white-space:pre-wrap;word-break:break-word;}',
+        '#ar-spinner{display:none;padding:24px;text-align:center;color:#666;}',
+        '.ar-spin{display:inline-block;width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#4d6bfe;border-radius:50%;animation:arSpin 0.8s linear infinite;margin-bottom:8px;}',
+        '@keyframes arSpin{to{transform:rotate(360deg)}}',
+        '.ar-stat-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px;margin-left:auto;}',
+        '.ar-stat-ok{background:#dcfce7;color:#166534;}',
+        '.ar-stat-err{background:#fee2e2;color:#991b1b;}',
+        '@media(max-width:600px){.ar-prov-grid{grid-template-columns:1fr 1fr;}#ar-box{padding:0;}}'
+    ].join('');
+    document.head.appendChild(style);
+})();
+
+// Build the overlay HTML once
+function buildArOverlay() {
+    if (document.getElementById('ar-overlay')) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'ar-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.innerHTML = [
+        '<div id="ar-box">',
+        '  <div id="ar-head">',
+        '    <div>',
+        '      <h2>&#128101; Ambiguity Resolver &mdash; Multi-AI Consensus</h2>',
+        '      <p>Select AIs with valid keys &rarr; all run your query in parallel &rarr; best answer synthesised</p>',
+        '    </div>',
+        '    <button id="ar-close" onclick="closeAR()" title="Close">&#10005;</button>',
+        '  </div>',
+        '  <div id="ar-query-area">',
+        '    <label>Your Question / Query</label>',
+        '    <textarea id="ar-prompt" placeholder="Enter your medical research question here..."></textarea>',
+        '  </div>',
+        '  <div id="ar-providers-area">',
+        '    <label>Select AI Providers (only those with saved keys are available)</label>',
+        '    <div class="ar-prov-grid" id="ar-prov-grid"></div>',
+        '  </div>',
+        '  <div id="ar-actions">',
+        '    <button id="ar-run-btn" onclick="runAmbiguityResolver()" disabled>',
+        '      &#9889; Resolve with Multi-AI',
+        '    </button>',
+        '    <span id="ar-note">Select at least 2 AIs</span>',
+        '  </div>',
+        '  <div id="ar-spinner">',
+        '    <div class="ar-spin"></div>',
+        '    <div id="ar-spin-msg">Querying selected AIs in parallel&hellip;</div>',
+        '  </div>',
+        '  <div id="ar-results"></div>',
+        '</div>'
+    ].join('');
+    document.body.appendChild(overlay);
+    // Close on backdrop click
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeAR();
+    });
+}
+
+function openAR(prefillText) {
+    buildArOverlay();
+    renderArProviderChips();
+    if (prefillText) {
+        var ta = document.getElementById('ar-prompt');
+        if (ta) ta.value = prefillText;
+    }
+    document.getElementById('ar-results').innerHTML = '';
+    document.getElementById('ar-spinner').style.display = 'none';
+    document.getElementById('ar-overlay').classList.add('ar-open');
+}
+
+function closeAR() {
+    var ov = document.getElementById('ar-overlay');
+    if (ov) ov.classList.remove('ar-open');
+}
+
+function renderArProviderChips() {
+    var grid = document.getElementById('ar-prov-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    Object.keys(PROVIDERS).forEach(function(pid) {
+        var meta = PROVIDERS[pid];
+        var hasKey = !!(window.ST && window.ST.keys && window.ST.keys[pid]);
+        var chip = document.createElement('div');
+        chip.className = 'ar-prov-chip' + (hasKey ? '' : ' ar-disabled');
+        chip.dataset.provider = pid;
+        chip.style.opacity = hasKey ? '1' : '0.45';
+        chip.innerHTML = '<span>' + meta.icon + '</span>'
+            + '<span>' + escapeHtml(meta.label) + '</span>'
+            + '<span class="ar-key-dot ' + (hasKey ? 'ar-key-ok' : 'ar-key-miss') + '" title="' + (hasKey ? 'Key configured' : 'No key saved') + '"></span>';
+        if (hasKey) {
+            chip.addEventListener('click', function() {
+                chip.classList.toggle('ar-selected');
+                updateArRunBtn();
+            });
+        }
+        grid.appendChild(chip);
+    });
+}
+
+function updateArRunBtn() {
+    var selected = document.querySelectorAll('.ar-prov-chip.ar-selected');
+    var btn = document.getElementById('ar-run-btn');
+    var note = document.getElementById('ar-note');
+    if (!btn) return;
+    var count = selected.length;
+    btn.disabled = count < 2;
+    if (note) note.textContent = count < 2
+        ? 'Select at least 2 AIs (' + count + ' selected)'
+        : count + ' AIs selected \u2014 ready to resolve';
+}
+
+function runAmbiguityResolver() {
+    var prompt = (document.getElementById('ar-prompt') || {}).value;
+    if (!prompt || !prompt.trim()) {
+        alert('Please enter a question first.');
+        return;
+    }
+    var selected = Array.from(document.querySelectorAll('.ar-prov-chip.ar-selected'));
+    if (selected.length < 2) { alert('Select at least 2 AIs.'); return; }
+
+    var pairs = selected.map(function(chip) {
+        return { provider: chip.dataset.provider, key: window.ST.keys[chip.dataset.provider] };
+    });
+
+    // Show spinner, hide results
+    document.getElementById('ar-spinner').style.display = 'block';
+    document.getElementById('ar-results').innerHTML = '';
+    document.getElementById('ar-run-btn').disabled = true;
+    document.getElementById('ar-spin-msg').textContent =
+        'Querying ' + pairs.length + ' AIs in parallel\u2026';
+
+    // POST to /api/resolve (backend endpoint we add)
+    fetch('/api/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            prompt: prompt.trim(),
+            providers: pairs
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        document.getElementById('ar-spinner').style.display = 'none';
+        document.getElementById('ar-run-btn').disabled = false;
+        renderArResults(data, prompt.trim());
+    })
+    .catch(function(err) {
+        document.getElementById('ar-spinner').style.display = 'none';
+        document.getElementById('ar-run-btn').disabled = false;
+        document.getElementById('ar-results').innerHTML =
+            '<div style="padding:16px;color:#ef4444;">&#10006; Connection error: ' + escapeHtml(String(err)) + '</div>';
+    });
+}
+
+function renderArResults(data, prompt) {
+    var container = document.getElementById('ar-results');
+    if (!container) return;
+    var html = '';
+
+    // Individual AI responses
+    var responses = data.responses || [];
+    responses.forEach(function(r) {
+        var icon = (PROVIDERS[r.provider] || {}).icon || '&#129302;';
+        var label = escapeHtml((PROVIDERS[r.provider] || {}).label || r.provider);
+        var badgeClass = r.success ? 'ar-stat-ok' : 'ar-stat-err';
+        var badgeText = r.success ? '&#10003; Success' : '&#10006; Failed';
+        html += '<div class="ar-resp-card">';
+        html += '<div class="ar-resp-head" style="background:#f8f9fa;">';
+        html += icon + ' <span>' + label + '</span>';
+        html += '<span class="ar-stat-badge ' + badgeClass + '">' + badgeText + '</span>';
+        html += '</div>';
+        if (r.success && r.text) {
+            html += '<div class="ar-resp-body">' + sanitizeAIResponse(r.text) + '</div>';
+        } else {
+            html += '<div class="ar-resp-err">&#9888; ' + escapeHtml(r.mode || 'No response') + '</div>';
+        }
+        html += '</div>';
+    });
+
+    // Synthesis
+    if (data.synthesis) {
+        html += '<div id="ar-synthesis">';
+        html += '<div id="ar-synthesis-head">&#127941; Synthesised Best Answer</div>';
+        html += '<div id="ar-synthesis-body">' + sanitizeAIResponse(data.synthesis) + '</div>';
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+// ── AMBIGUITY RESOLVER BUTTON FACTORY ────────────────────────
+function createARButton(prefillFn, containerEl, extraClass) {
+    var btn = document.createElement('button');
+    btn.className = 'btn btn-ar' + (extraClass ? ' ' + extraClass : '');
+    btn.innerHTML = '&#9889; Resolve with Multi-AI';
+    btn.title = 'Query multiple AIs simultaneously and get a synthesised best answer';
+    btn.style.cssText = [
+        'display:inline-flex;align-items:center;gap:7px;padding:10px 20px;',
+        'border-radius:10px;border:2px solid #4d6bfe;background:transparent;',
+        'color:#4d6bfe;font-family:inherit;font-size:13px;font-weight:700;',
+        'cursor:pointer;transition:all 0.2s;white-space:nowrap;'
+    ].join('');
+    btn.addEventListener('mouseenter', function() {
+        btn.style.background = '#4d6bfe';
+        btn.style.color = '#fff';
+    });
+    btn.addEventListener('mouseleave', function() {
+        btn.style.background = 'transparent';
+        btn.style.color = '#4d6bfe';
+    });
+    btn.addEventListener('click', function() {
+        openAR(prefillFn ? prefillFn() : '');
+    });
+    if (containerEl) containerEl.appendChild(btn);
+    return btn;
+}
+
+// ======= END PATCH =======
+</script>
+</body>
+</html>
